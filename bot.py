@@ -96,7 +96,6 @@ def run_discord_bot():
         pfp = member.display_avatar
         cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
         user = cursor.fetchone()
-
         level_persentage = "00.00" if None else f"{((int(user['xp']) / (int(user['xp']) * 100 * 1.35)) * 100):.2f}"
         xp_range = f"{int(user['xp'])} / {int(user['level'] * 100 * 1.35)}"
 
