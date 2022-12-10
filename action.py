@@ -11,28 +11,44 @@ mydb = mysql.connector.connect(
 
 cursor = mydb.cursor(dictionary=True)
 
-def level_up(id,xp_gain,name):
-    cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
-    user = cursor.fetchone()
-    sql = f"UPDATE user SET xp = {int(user['xp']) + xp_gain} WHERE id_user = {id}"
-    cursor.execute(sql)
-    mydb.commit()
-    cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
-    user_up = cursor.fetchone() 
-    need_xp = int(user_up['level']) * 100 * 1.35
+def level_up(id,xp_gain):
+    with open('users.json', 'r') as f:
+        data = json.load(f)
+    user = data['users']
+
+    name = user[str(id)]['name']
+    level = user[str(id)]['level']
+    xp = user[str(id)]['xp']
+    attack = user[str(id)]['attack'] 
+    defense = user[str(id)]['defense']
+    health = user[str(id)]['health']
+    max_health = user[str(id)]['max_health']
+
+    need_xp = (int(level) * 100 * 1.35) 
+
     level_up = 0
     level_up_text = ''
-    if user_up['xp'] >= need_xp:
+    if xp >= need_xp:
         for x in range(10000):
-            if int(user_up['xp']) - need_xp <= 0:
+            if int(xp) - need_xp <= 0:
                 break
             level_up += 1
-            need_xp += (int(user_up['level']) + level_up) * 100 * 1.35
-        sql_up = f"UPDATE user SET level = {int(user['level']) + level_up},xp = {(((int(user_up['level']) + level_up) * 100 * 1.35) - need_xp) + int(user_up['xp'])},attack = {user_up['attack'] + (level_up * 1)},defense = {user_up['defense'] + (level_up * 1)},max_health = {user_up['max_health'] + (level_up * 5)} WHERE id_user = {id}"
-        # print(f"{((int(user_up['level']) + level_up) * 100 * 1.35) - need_xp} + {int(user_up['xp'])} = {(((int(user_up['level']) + level_up) * 100 * 1.35) - need_xp) + int(user_up['xp'])}")
-        cursor.execute(sql_up)
-        mydb.commit()
+            need_xp += (int(level) + level_up) * 100 * 1.35
+            
         level_up_text = ""if level_up <= 0 else f"\n**{name}** leveled up {level_up} times"
+
+        user[str(id)] = {}
+        user[str(id)]['name'] = name
+        user[str(id)]['level'] = level + level_up
+        user[str(id)]['xp'] = (((level + level_up) * 100 * 1.35) - need_xp) + int(xp)
+        user[str(id)]['attack'] = attack + (level_up * 1)
+        user[str(id)]['defense'] = defense + (level_up * 1)
+        user[str(id)]['health'] =  health
+        user[str(id)]['max_health'] =  max_health + (level_up * 5)
+
+        with open('users.json', 'w') as f:
+            json.dump(data, f, indent=4)
     return f"{level_up_text}"
+    # return 
     # print(id)
     # print(xp_gain)

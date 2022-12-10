@@ -1,26 +1,23 @@
 {
     "data" :{
-        "forest" :[{
+        "underground f1" :[{
             "1" : {
-                "name":"wolf",
-                "min_damage" : 22,
-                "max_damage" : 38,
-                "min_xp" : 20,
-                "max_xp" : 35
+                "name":"bat",
+                "damage" : 24,
+                "xp" : 20,
+                "gold" : 13
             },
             "2" : {
                 "name":"slime",
-                "min_damage" : 23,
-                "max_damage" : 36,
-                "min_xp" : 18,
-                "max_xp" : 31
+                "damage" : 25,
+                "xp" : 18,
+                "gold": 14
             },
             "3" : {
                 "name":"snake",
-                "min_damage" : 21,
-                "max_damage" : 30,
-                "min_xp" : 20,
-                "max_xp" : 32
+                "damage" : 27,
+                "xp" : 20,
+                "gold": 15
             }
         }]
     }

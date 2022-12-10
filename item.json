@@ -1,0 +1,20 @@
+{
+    "data":{
+        "item":{
+            "equipment":{
+                "sword":{
+                    "wooden_sword":{
+                        "name":"wooden sword",
+                        "attack":3
+                    }
+                },
+                "armor":{
+                    "leather armor":{
+                        "name":"leather armor",
+                        "defense": 3
+                    }
+                }
+            }
+        }
+    }
+}

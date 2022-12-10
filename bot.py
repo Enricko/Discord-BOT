@@ -6,8 +6,9 @@ import action
 import json
 
 def run_discord_bot():
-    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GbIfUG.LGSIQgJUAF_cfhJHuZlQT9Z4YmhUvn3jVdgFSQ'
-    client = commands.Bot(command_prefix=".",intents=discord.Intents.all())
+    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GdHpBW.YxbdM1AneC540-FePihIjoXWSrGQIGSCbOY_kU'
+    prefix = "."
+    client = commands.Bot(command_prefix=prefix,intents=discord.Intents.all())
 
 
     mydb = mysql.connector.connect(
@@ -39,18 +40,26 @@ def run_discord_bot():
 
     @client.command()
     async def start(ctx):
-        id = str(ctx.author.id)
-        username = str(ctx.author)
-        sql_where = f"SELECT * FROM user WHERE id_user = {id}"
-        if sql_where:
-            await ctx.send(f"You Already Registed")
-        else:
-            sql = "INSERT INTO user (id_user,name,level,xp,attack,defense,health,max_health) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            val = (id,username,1,0,5,5,100,100)
-            # val = (2,'erick',0)
-            cursor.execute(sql,val)
-            mydb.commit()
-            await ctx.send(f"You have been registed")
+        with open('users.json', 'r') as f:
+          user = json.load(f)
+        member = ctx.author
+
+        if str(member.id) in user['users']:
+            await ctx.send("Your account has already existed!")
+        elif str(member.id) not in user['users']:
+            user['users'][str(member.id)] = {}
+            user['users'][str(member.id)]['name'] =  member.name
+            user['users'][str(member.id)]['level'] =  1
+            user['users'][str(member.id)]['xp'] =  0
+            user['users'][str(member.id)]['attack'] =  1
+            user['users'][str(member.id)]['defense'] =  1
+            user['users'][str(member.id)]['health'] =  100
+            user['users'][str(member.id)]['max_health'] =  100
+
+            with open('users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+    
+            await ctx.send(f"Welcome **{member.name}** to our game **Dungeon Adventure**!")
 
     @client.command()
     async def xp(ctx,a:int = 0, member:discord.member = None):
@@ -95,11 +104,16 @@ def run_discord_bot():
         id = member.id
         name = member.display_name
         pfp = member.display_avatar
-        cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
-        user = cursor.fetchone()
-        if user == None:
-            await ctx.send('User doesnt play the bot!')
+
+        with open('users.json', 'r') as f:
+          data = json.load(f)
+
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
             return
+
+        user = data['users'][str(id)]
+
         level_persentage = "0.00" if None else f"{((int(user['xp']) / (int(user['level']) * 100 * 1.35)) * 100):.2f}"
         xp_range = f"{int(user['xp'])} / {int(user['level'] * 100 * 1.35)}"
 
@@ -114,53 +128,111 @@ def run_discord_bot():
     @client.command(name='hunt')
     async def hunt(ctx):
         member = ctx.author
+
+        id = member.id
+        name = member.display_name
+
+        with open('users.json', 'r') as f:
+          data = json.load(f)
+
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
+            return
+            
+        user = data['users']
+
+        level = user[str(id)]['level']
+        xp = user[str(id)]['xp']
+        attack = user[str(id)]['attack'] 
+        defense = user[str(id)]['defense']
+        health = user[str(id)]['health']
+        max_health = user[str(id)]['max_health']
+
         file = open('monster.json','r')
         r = json.load(file)
 
-        for i in r['data']['forest']:
+        for i in r['data']['underground f1']:
             monster = (i[f'{(random.randint(1, 3))}'])
-        
-        id = member.id
-        name = member.display_name
-        cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
-        user = cursor.fetchone()
 
-        if random.randint(monster['min_damage'],monster['max_damage']) - int(user['attack'] + user['defense'] * 0.95) <= 0:
+        if random.randint(monster['damage'] - 5,monster['damage'] + 5) - int(user[str(id)]['attack'] + user[str(id)]['defense'] * 0.95) <= 0:
             damage = 0
         else:
-            damage = random.randint(monster['min_damage'],monster['max_damage']) - int(user['attack'] + user['defense'] * 0.95)
-
-        xp_earn = (random.randint(monster['min_xp'],monster['max_xp']))
-        if int(user['health']) <= damage:
-            if int(user['level']) > 1:
-                sql_up = f"UPDATE user SET level = {user['level'] - 1},health = {user['max_health'] - 5},attack = {user['attack'] - 1},defense = {user['defense'] - 1},max_health = {user['max_health'] - 5},xp = 0 WHERE id_user = {id}"
-                cursor.execute(sql_up)
-                mydb.commit()
+            damage = random.randint(monster['damage'] - 5,monster['damage'] + 5) - int(user[str(id)]['attack'] + user[str(id)]['defense'] * 0.95)
+        health_taken = health - damage
+        xp_gain = (random.randint(monster['xp'] - 5,monster['xp'] + 5))
+        xp_earn = xp + xp_gain
+        die = ''
+        
+        if int(user[str(id)]['health']) <= damage:
+            if int(user[str(id)]['level']) > 1:
+                level = user[str(id)]['level'] - 1
+                xp_earn = 0
+                attack = user[str(id)]['attack'] - 1
+                defense = user[str(id)]['defense'] - 1
+                health_taken = user[str(id)]['max_health'] - 5
+                max_health = user[str(id)]['max_health'] - 5
             else:
-                sql_up = f"UPDATE user SET health = {user['max_health']},xp = 0 WHERE id_user = {id}"
-                cursor.execute(sql_up)
-                mydb.commit()
-            await ctx.send(f"**{name}** died while hunting {(monster['name']).upper()}\nand lose a level")
-            return
-        sql_up = f"UPDATE user SET health = {user['health'] - damage},xp = {user['xp'] + xp_earn} WHERE id_user = {id}"
-        cursor.execute(sql_up)
-        mydb.commit()
-        level_up = action.level_up(user['id_user'],xp_earn,name)
-        await ctx.send(f"**{name}** found and kill {(monster['name']).upper()} \nEarn {xp_earn} XP\nLost {damage} HP, remaining {user['health'] - damage}/{user['max_health']} HP left {level_up}")
+                health_taken = user[str(id)]['max_health']
+                xp_earn = 0
+                
+            die = (f"**{name}** died while hunting {(monster['name']).upper()}\nand lose a level")
+            
+
+        user[str(id)] = {}
+        user[str(id)]['name'] = name
+        user[str(id)]['level'] = level
+        user[str(id)]['xp'] = xp_earn
+        user[str(id)]['attack'] = attack
+        user[str(id)]['defense'] = defense
+        user[str(id)]['health'] =  health_taken
+        user[str(id)]['max_health'] =  max_health
+
+        with open('users.json', 'w') as f:
+            json.dump(data, f, indent=4)
+
+        level_up = action.level_up(id,xp_earn)
+
+        await ctx.send(die if die != '' else f"**{name}** found and kill **{(monster['name']).upper()}** \nEarn {xp_gain} XP\nLost {damage} HP, remaining {health_taken}/{max_health} HP left {level_up}")
 
     @client.command(name='heal')
     async def heal(ctx):
         member = ctx.author
+
         id = member.id
         name = member.display_name
-        cursor.execute(f"SELECT * FROM user WHERE id_user = {id}")
-        user = cursor.fetchone()
-        if user['health'] < user['max_health']:
-            cursor.execute(f"UPDATE user SET health = {user['max_health']} WHERE id_user = {id}")
-            mydb.commit()
-            await ctx.send(f"**{name}** health been restored")
+
+        with open('users.json', 'r') as f:
+          data = json.load(f)
+
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
             return
-        await ctx.send(f"**{name}** health is maxed out")
+            
+        user = data['users']
+
+        level = user[str(id)]['level']
+        xp = user[str(id)]['xp']
+        attack = user[str(id)]['attack'] 
+        defense = user[str(id)]['defense']
+        health = user[str(id)]['health']
+        max_health = user[str(id)]['max_health']
+        full = ''
+        if health < max_health:
+            health = max_health
+            full = (f"**{name}** health been restored")
+
+        user[str(id)] = {}
+        user[str(id)]['name'] = name
+        user[str(id)]['level'] = level
+        user[str(id)]['xp'] = xp
+        user[str(id)]['attack'] = attack
+        user[str(id)]['defense'] = defense
+        user[str(id)]['health'] =  health
+        user[str(id)]['max_health'] =  max_health
+
+        with open('users.json', 'w') as f:
+            json.dump(data, f, indent=4)
+        await ctx.send(full if full != '' else f"**{name}** health is maxed out")
         
         
 
