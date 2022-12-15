@@ -16,15 +16,15 @@
         },
         "491905790966235136": {
             "name": "IcyCoolz",
-            "level": 9,
-            "xp": 953.0,
-            "attack": 6969696978,
-            "defense": 9,
-            "health": 100,
-            "max_health": 140,
-            "gold": 1501230016319,
+            "level": 2,
+            "xp": 122.0,
+            "attack": 2,
+            "defense": 2,
+            "health": 5,
+            "max_health": 105,
+            "gold": 200630,
             "equipments": {
-                "sword": "drionfi sword",
+                "sword": null,
                 "armor": null
             }
         }

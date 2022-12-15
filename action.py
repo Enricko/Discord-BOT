@@ -1,14 +1,7 @@
 import json
 import random
-
-# mydb = mysql.connector.connect(
-#     host = "localhost",
-#     user = "root",
-#     password = "",
-#     database = "level_discord"
-# )
-
-# cursor = mydb.cursor(dictionary=True)
+import datetime
+from datetime import datetime as date
 
 def level_up(id,xp_gain):
     with open('json/users.json', 'r') as f:
@@ -50,6 +43,46 @@ def level_up(id,xp_gain):
         with open('json/users.json', 'w') as f:
             json.dump(data, f, indent=4)
     return f"{level_up_text}"
-    # return 
-    # print(id)
-    # print(xp_gain)
+    
+def cooldown_error(cmd,cooldown):
+    
+    cd = {
+        "hunt" : "You already hunting try again in",
+        "cooldown" : "~=~"
+    }
+    cd_left = cooldown - datetime.datetime.now() 
+    seconds = int(cd_left.seconds)
+    days = seconds // 86400
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    text = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
+    return f"{cd[cmd]} {text}"
+
+def boost(boost = 'xp boost',id = 491905790966235136):
+    with open('json/users.json', 'r') as f:
+        data = json.load(f)
+    user = data['users'][str(id)]
+
+    with open('json/buff.json', 'r') as f:
+        buff = json.load(f)
+
+    with open('json/item.json', 'r') as f:
+        item = json.load(f)
+    buffItemSmall = item['data']['item']['consumables'][f"small {boost}"]['buff']['boost']
+    buffItemMedium = item['data']['item']['consumables'][f"medium {boost}"]['buff']['boost']
+    buffItemLarge = item['data']['item']['consumables'][f"large {boost}"]['buff']['boost']
+    small = date.strptime(buff['data'][str(id)][boost]['small']['time'], '%Y-%m-%d %H:%M:%S')
+    medium = date.strptime(buff['data'][str(id)][boost]['medium']['time'], '%Y-%m-%d %H:%M:%S')
+    large = date.strptime(buff['data'][str(id)][boost]['large']['time'], '%Y-%m-%d %H:%M:%S')
+    current = 0
+    if datetime.datetime.now() <= small:
+        current += buffItemSmall
+    if datetime.datetime.now() <= medium:
+        current += buffItemMedium
+    if datetime.datetime.now() <= large:
+        current += buffItemLarge
+    
+    return 1 + (current / 100)
+boost()
+

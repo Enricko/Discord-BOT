@@ -4,7 +4,7 @@
             "slime":{
                 "normal chest":{
                     "name":"normal chest",
-                    "chance": 100000
+                    "chance": 10
                 }
             }
         },
@@ -12,6 +12,10 @@
             "normal chest":{
                 "name":"normal chest",
                 "chance": 100000
+            },
+            "boost chest":{
+                "name":"boost chest",
+                "chance": 100
             }
         }
     }

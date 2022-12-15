@@ -2,33 +2,77 @@
     "data": {
         "491905790966235136": {
             "equipments": {
-                "drionfi sword": {
-                    "name": "drionfi sword",
-                    "icon": ":diamondSword:",
-                    "attack": 6969696969
-                },
-                "stone sword": {
-                    "name": "stone sword",
-                    "icon": ":diamondSword:",
-                    "attack": 7
-                },
                 "wooden sword": {
                     "name": "wooden sword",
-                    "icon": ":diamondSword:",
+                    "icon": "<:woodenSword:1052158045767073822>",
                     "attack": 3
                 }
             },
-            "items": {},
+            "items": {
+                "stone": {
+                    "name": "stone",
+                    "qty": 939
+                }
+            },
             "consumables": {
-                "health potion": {
-                    "name": "health potion",
-                    "icon": ":healthPotion:",
-                    "qty": 111
-                },
                 "normal chest": {
                     "name": "normal chest",
+                    "icon": "<:normalChest:1052880531861286933>",
+                    "qty": 9912
+                },
+                "boost chest": {
+                    "name": "boost chest",
                     "icon": ":normalChest:",
-                    "qty": 7
+                    "qty": 9603
+                },
+                "health potion": {
+                    "name": "health potion",
+                    "qty": 253
+                },
+                "small xp boost": {
+                    "name": "small xp boost",
+                    "icon": "<:smallXpBoost:1052846772973744128>",
+                    "qty": 610
+                },
+                "small gold boost": {
+                    "name": "small gold boost",
+                    "icon": "<:smallGoldBoost:1052846553976549416>",
+                    "qty": 610
+                },
+                "small drop boost": {
+                    "name": "small drop boost",
+                    "icon": "<:smallDropBoost:1052848166464139264>",
+                    "qty": 614
+                },
+                "medium xp boost": {
+                    "name": "medium xp boost",
+                    "icon": "<:mediumXpBoost:1052851712320360468>",
+                    "qty": 434
+                },
+                "medium gold boost": {
+                    "name": "medium gold boost",
+                    "icon": "<:mediumGoldBoost:1052852468578525214>",
+                    "qty": 446
+                },
+                "medium drop boost": {
+                    "name": "medium drop boost",
+                    "icon": "<:mediumDropBoost:1052850911623512081>",
+                    "qty": 417
+                },
+                "large xp boost": {
+                    "name": "large xp boost",
+                    "icon": ":largeXpBoost:",
+                    "qty": 309
+                },
+                "large gold boost": {
+                    "name": "large gold boost",
+                    "icon": ":largeGoldBoost:",
+                    "qty": 303
+                },
+                "large drop boost": {
+                    "name": "large drop boost",
+                    "icon": "<:largeDropBoost:1052862489257324626>",
+                    "qty": 52
                 }
             }
         },

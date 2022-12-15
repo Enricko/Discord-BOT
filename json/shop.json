@@ -1,25 +1,32 @@
 {
-    "data":{
-        "wooden sword":{
-            "name": "wooden sword",
-            "icon": ":woodenSword:",
-            "price" : 100,
-            "type": "equipment",
-            "description": "A wooden sword increase your attack by 3"
-        },
-        "leather armor":{
-            "name" :"leather armor",
-            "icon": ":leatherArmor:",
-            "price" : 100,
-            "type": "equipment",
-            "description":"A leather armor increase your defense by 3"
-        },
-        "health potion":{
-            "name" :"health potion",
-            "icon": ":healthPotion:",
-            "price" : 100,
-            "type": "consumable",
-            "description":"A potion that can give u instant health by using it"
-        }
+  "data": {
+    "diamond sword": {
+      "description": "A diamond sword increase your attack by 53",
+      "icon": "<:diamondSword:1051461128330416240>",
+      "name": "diamond sword",
+      "price": 50000,
+      "type": "equipment"
+    },
+    "health potion": {
+      "description": "A potion that can give u instant health by using it",
+      "icon": "<:healthPotion:1052161164789952532>",
+      "name": "health potion",
+      "price": 100,
+      "type": "consumable"
+    },
+    "leather armor": {
+      "description": "A leather armor increase your defense by 3",
+      "icon": "<:leatherArmor:1052221741230981181>",
+      "name": "leather armor",
+      "price": 100,
+      "type": "equipment"
+    },
+    "wooden sword": {
+      "description": "A wooden sword increase your attack by 3",
+      "icon": "<:woodenSword:1052158045767073822>",
+      "name": "wooden sword",
+      "price": 100,
+      "type": "equipment"
     }
+  }
 }

@@ -1,0 +1,19 @@
+{
+    "data":{
+        "commands":{
+            "statistic":{},
+            "fighting":{},
+            "economy":{},
+            "working":{},
+            "gambling":{},
+            "extra":{},
+            "donator":{},
+            "unlock":{}
+        },
+        "items":{
+            "wooden sword":{
+                "description" : "Wooden sword a beginner sword that increase your attack by 3 you can buy on `.shop`"
+            }
+        }
+    }
+}

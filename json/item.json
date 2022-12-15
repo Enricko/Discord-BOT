@@ -5,54 +5,193 @@
                 "sword": {
                     "wooden sword": {
                         "name": "wooden sword",
-                        "icon": ":diamondSword:",
-                        "attack": 3
+                        "icon": "<:woodenSword:1052158045767073822>",
+                        "attack": 3,
+                        "sell": 25
                     },
                     "drionfi sword": {
                         "name": "drionfi sword",
-                        "icon": ":diamondSword:",
-                        "attack": 6969696969
+                        "icon": "<:amythyst:1052476949970296843>",
+                        "attack": 6969696969,
+                        "sell": 999999999999999999
                     },
                     "stone sword": {
                         "name": "stone sword",
-                        "icon": ":diamondSword:",
-                        "attack": 7
+                        "icon": "<:stoneSword:1052226137184538675>",
+                        "attack": 7,
+                        "sell": 250
                     },
                     "diamond sword": {
                         "name": "diamond sword",
-                        "icon": ":diamondSword:",
-                        "attack": 53
+                        "icon": "<:diamondSword:1051461128330416240>",
+                        "attack": 53,
+                        "sell": 30000
                     }
                 },
                 "armor": {
                     "leather armor": {
                         "name": "leather armor",
-                        "icon": ":diamondSword:",
-                        "defense": 3
+                        "icon": "<:leatherArmor:1052221741230981181>",
+                        "defense": 3,
+                        "sell": 25
                     }
                 }
             },
             "consumables":{
                 "health potion":{
                     "name":"health potion",
-                    "icon": ":healthPotion:"
+                    "icon": "<:healthPotion:1052161164789952532>",
+                    "sell": 25
                 },
                 "normal chest":{
                     "name":"normal chest",
-                    "icon":":normalChest:",
+                    "icon":"<:normalChest:1052880531861286933>",
                     "type":"chest",
+                    "open_type":"multi",
                     "min_drop":5,
                     "max_drop":15,
+                    "sell": 250,
                     "use":{
                         "stone":80000,
                         "health potion": 20000
+                    }
+                },
+                "boost chest":{
+                    "name":"boost chest",
+                    "icon":"<:normalChest:1052897217175896074>",
+                    "type":"chest",
+                    "open_type":"multi",
+                    "min_drop":1,
+                    "max_drop":10,
+                    "sell": 25000,
+                    "use":{
+                        "small xp boost":20000,
+                        "small drop boost":20000,
+                        "small gold boost":20000,
+                        "medium xp boost":10000,
+                        "medium drop boost":10000,
+                        "medium gold boost":10000,
+                        "large xp boost":3333,
+                        "large drop boost":3333,
+                        "large gold boost":3333
+                    }
+                },
+                "physics potion":{
+                    "name":"physics potion",
+                    "icon":":physicsPotion:",
+                    "type":"stat enchantment",
+                    "open_type":"multi",
+                    "sell": 250,
+                    "stat_up":{
+                        "attack": 1,
+                        "defense": 1
+                    }
+                },
+                "small drop boost":{
+                    "name":"small drop boost",
+                    "icon":"<:smallDropBoost:1052848166464139264>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 25000,
+                    "buff":{
+                        "boost": 10,
+                        "boost time": 600
+                    }
+                },
+                "medium drop boost":{
+                    "name":"medium drop boost",
+                    "icon":"<:mediumDropBoost:1052850911623512081>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 50000,
+                    "buff":{
+                        "boost": 25,
+                        "boost time": 600
+                    }
+                },
+                "large drop boost":{
+                    "name":"large drop boost",
+                    "icon":"<:largeDropBoost:1052862489257324626>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 100000,
+                    "buff":{
+                        "boost": 50,
+                        "boost time": 600
+                    }
+                },
+                "small gold boost":{
+                    "name":"small gold boost",
+                    "icon":"<:smallGoldBoost:1052846553976549416>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 25000,
+                    "buff":{
+                        "boost": 10,
+                        "boost time": 600
+                    }
+                },
+                "medium gold boost":{
+                    "name":"medium gold boost",
+                    "icon":"<:mediumGoldBoost:1052852468578525214>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 50000,
+                    "buff":{
+                        "boost": 25,
+                        "boost time": 600
+                    }
+                },
+                "large gold boost":{
+                    "name":"large gold boost",
+                    "icon":"<:largeGoldBoost:1052861746181845032>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 100000,
+                    "buff":{
+                        "boost": 50,
+                        "boost time": 600
+                    }
+                },
+                "small xp boost":{
+                    "name":"small xp boost",
+                    "icon":"<:smallXpBoost:1052846772973744128>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 25000,
+                    "buff":{
+                        "boost": 10,
+                        "boost time": 600
+                    }
+                },
+                "medium xp boost":{
+                    "name":"medium xp boost",
+                    "icon":"<:mediumXpBoost:1052851712320360468>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 50000,
+                    "buff":{
+                        "boost": 25,
+                        "boost time": 600
+                    }
+                },
+                "large xp boost":{
+                    "name":"large xp boost",
+                    "icon":"<:largeXpBoost:1052862136885448714>",
+                    "type":"buff",
+                    "open_type":"multi",
+                    "sell": 100000,
+                    "buff":{
+                        "boost": 50,
+                        "boost time": 600
                     }
                 }
             },
             "items":{
                 "stone":{
                     "name":"stone",
-                    "icon":":stone:"
+                    "icon":"<:stone:1052160341930426389>",
+                    "sell": 5
                 }
             }
         }
