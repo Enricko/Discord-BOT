@@ -12,8 +12,9 @@ import json
 import action
 import asyncio
 
+
 def run_discord_bot():
-    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GZ8lzb.ZE6cA8Iw2uFM_PvXhQDvgXQsALa5ZJmjLJpwEY'
+    TOKEN = ''
     prefix = "."
     client = commands.Bot(command_prefix=prefix,intents=discord.Intents.all())
     client.remove_command('help')
