@@ -1,0 +1,60 @@
+{
+    "data": {
+        "item": {
+            "equipments": {
+                "sword": {
+                    "wooden sword": {
+                        "name": "wooden sword",
+                        "icon": ":diamondSword:",
+                        "attack": 3
+                    },
+                    "drionfi sword": {
+                        "name": "drionfi sword",
+                        "icon": ":diamondSword:",
+                        "attack": 6969696969
+                    },
+                    "stone sword": {
+                        "name": "stone sword",
+                        "icon": ":diamondSword:",
+                        "attack": 7
+                    },
+                    "diamond sword": {
+                        "name": "diamond sword",
+                        "icon": ":diamondSword:",
+                        "attack": 53
+                    }
+                },
+                "armor": {
+                    "leather armor": {
+                        "name": "leather armor",
+                        "icon": ":diamondSword:",
+                        "defense": 3
+                    }
+                }
+            },
+            "consumables":{
+                "health potion":{
+                    "name":"health potion",
+                    "icon": ":healthPotion:"
+                },
+                "normal chest":{
+                    "name":"normal chest",
+                    "icon":":normalChest:",
+                    "type":"chest",
+                    "min_drop":5,
+                    "max_drop":15,
+                    "use":{
+                        "stone":80000,
+                        "health potion": 20000
+                    }
+                }
+            },
+            "items":{
+                "stone":{
+                    "name":"stone",
+                    "icon":":stone:"
+                }
+            }
+        }
+    }
+}

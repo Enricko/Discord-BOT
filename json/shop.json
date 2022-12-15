@@ -1,0 +1,25 @@
+{
+    "data":{
+        "wooden sword":{
+            "name": "wooden sword",
+            "icon": ":woodenSword:",
+            "price" : 100,
+            "type": "equipment",
+            "description": "A wooden sword increase your attack by 3"
+        },
+        "leather armor":{
+            "name" :"leather armor",
+            "icon": ":leatherArmor:",
+            "price" : 100,
+            "type": "equipment",
+            "description":"A leather armor increase your defense by 3"
+        },
+        "health potion":{
+            "name" :"health potion",
+            "icon": ":healthPotion:",
+            "price" : 100,
+            "type": "consumable",
+            "description":"A potion that can give u instant health by using it"
+        }
+    }
+}

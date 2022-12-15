@@ -1,0 +1,32 @@
+{
+    "users": {
+        "498833606760726549": {
+            "name": "Leen.",
+            "level": 1,
+            "xp": 0,
+            "attack": 1,
+            "defense": 1,
+            "health": 100,
+            "max_health": 100,
+            "gold": 100,
+            "equipments": {
+                "sword": null,
+                "armor": null
+            }
+        },
+        "491905790966235136": {
+            "name": "IcyCoolz",
+            "level": 9,
+            "xp": 953.0,
+            "attack": 6969696978,
+            "defense": 9,
+            "health": 100,
+            "max_health": 140,
+            "gold": 1501230016319,
+            "equipments": {
+                "sword": "drionfi sword",
+                "armor": null
+            }
+        }
+    }
+}

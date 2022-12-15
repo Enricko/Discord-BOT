@@ -1,11 +1,15 @@
+from random import choices
+import random
 import json
+import numpy as np
 
-def test():
-    file = open('users.json','r')
-    r = json.load(file)
+# with open('json/item.json', 'r') as i:
+#     item = json.load(i)
 
-    for i in r['users']:
-        print(i)
-    # Random.choice(r)
-
-test()
+# a = item['data']['item']['consumables']['normal chest']['use']
+for x in ['stone', 'health potion']:
+    print(x)
+# a = "a,12-b,12-c,12"
+# a = a.split('-')
+# a = a.split(',')
+# print(a)

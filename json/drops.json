@@ -1,0 +1,18 @@
+{
+    "data":{
+        "monster":{
+            "slime":{
+                "normal chest":{
+                    "name":"normal chest",
+                    "chance": 100000
+                }
+            }
+        },
+        "random drop":{
+            "normal chest":{
+                "name":"normal chest",
+                "chance": 100000
+            }
+        }
+    }
+}

@@ -1,18 +1,17 @@
 import json
 import random
-import mysql.connector
 
-mydb = mysql.connector.connect(
-    host = "localhost",
-    user = "root",
-    password = "",
-    database = "level_discord"
-)
+# mydb = mysql.connector.connect(
+#     host = "localhost",
+#     user = "root",
+#     password = "",
+#     database = "level_discord"
+# )
 
-cursor = mydb.cursor(dictionary=True)
+# cursor = mydb.cursor(dictionary=True)
 
 def level_up(id,xp_gain):
-    with open('users.json', 'r') as f:
+    with open('json/users.json', 'r') as f:
         data = json.load(f)
     user = data['users']
 
@@ -37,16 +36,18 @@ def level_up(id,xp_gain):
             
         level_up_text = ""if level_up <= 0 else f"\n**{name}** leveled up {level_up} times"
 
-        user[str(id)] = {}
-        user[str(id)]['name'] = name
-        user[str(id)]['level'] = level + level_up
-        user[str(id)]['xp'] = (((level + level_up) * 100 * 1.35) - need_xp) + int(xp)
-        user[str(id)]['attack'] = attack + (level_up * 1)
-        user[str(id)]['defense'] = defense + (level_up * 1)
-        user[str(id)]['health'] =  health
-        user[str(id)]['max_health'] =  max_health + (level_up * 5)
+        newData = {
+            "level" : level + level_up,
+            "xp" : (((level + level_up) * 100 * 1.35) - need_xp) + int(xp),
+            "attack" : attack + (level_up * 1),
+            "defense" : defense + (level_up * 1),
+            "health" : health,
+            "max_health" : max_health + (level_up * 5)
+        }
 
-        with open('users.json', 'w') as f:
+        data['users'][str(id)].update(newData)
+
+        with open('json/users.json', 'w') as f:
             json.dump(data, f, indent=4)
     return f"{level_up_text}"
     # return 
