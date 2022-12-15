@@ -1,0 +1,13 @@
+{
+    "data":{
+        "equipments":{
+            "stone sword":{
+                "level": 1,
+                "stone": 20
+            }
+        },
+        "end":{},
+        "dismantle":{},
+        "special":{}
+    }
+}

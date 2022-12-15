@@ -14,7 +14,7 @@ import asyncio
 
 
 def run_discord_bot():
-    TOKEN = ''
+    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GJ135t.mbxqzEjfEwjy89ydFizD4YrOtKBQ7gtJ4xinn0'
     prefix = "."
     client = commands.Bot(command_prefix=prefix,intents=discord.Intents.all())
     client.remove_command('help')
@@ -320,10 +320,8 @@ def run_discord_bot():
                     qty = 1
                     if mObtain in inv['data'][str(member.id)][typeDrop]:
                         qty = inv['data'][str(member.id)][typeDrop][mObtain]['qty'] + 1
-                    icon = item['data']['item'][typeDrop][mObtain]['icon']
                     inv['data'][str(member.id)][typeDrop][mObtain] = {}
                     inv['data'][str(member.id)][typeDrop][mObtain]['name'] = str(mObtain)
-                    inv['data'][str(member.id)][typeDrop][mObtain]['icon'] = icon
                     inv['data'][str(member.id)][typeDrop][mObtain]['qty'] = qty
                     # inv.update(mInvDrop)
                     
@@ -345,10 +343,8 @@ def run_discord_bot():
                     qty = 1
                     if rObtain in inv['data'][str(member.id)][rtypeDrop]:
                         qty = inv['data'][str(member.id)][rtypeDrop][rObtain]['qty'] + 1
-                    icon = item['data']['item'][rtypeDrop][rObtain]['icon']
                     inv['data'][str(member.id)][rtypeDrop][rObtain] = {}
                     inv['data'][str(member.id)][rtypeDrop][rObtain]['name'] = str(rObtain)
-                    inv['data'][str(member.id)][rtypeDrop][rObtain]['icon'] = icon
                     inv['data'][str(member.id)][rtypeDrop][rObtain]['qty'] = qty
 
                     with open('json/inventory.json', 'w') as f:
@@ -589,6 +585,7 @@ def run_discord_bot():
             embed.add_field(name=f"BOOST",value=f"\n{boost}")
             embed.add_field(name=f"POTION",value=f"\n{potion}")
             embed.set_footer(text=f"If you need some money just do `{prefix}sell [item name]`")
+            # await interaction.response.edit_message()
             await interaction.response.edit_message(embed=embed)
 
         async def interaction_check(self, interaction: discord.Interaction):
@@ -879,7 +876,7 @@ def run_discord_bot():
                 elif (int(split[-1]) if is_integer(split[-1]) else 1) > inv['data'][str(id)]['consumables'][new_arg]['qty']:
                     await ctx.send(f'**{mention}** Hmmm... You don`t have that many!')
                     return
-                elif (int(split[-1]) if is_integer(split[-1]) else 1) > 100:
+                elif item['data']['item']['consumables'][new_arg]['type'] == 'chest' and (int(split[-1]) if is_integer(split[-1]) else 1) > 100:
                     await ctx.send(f'**{mention}** 100 is the maximum of using item per time!')
                     return
             elif item['data']['item']['consumables'][new_arg]['open_type'] == 'single':
@@ -924,10 +921,8 @@ def run_discord_bot():
                         qty = int(oValue)
                         if oChest in inv['data'][str(member.id)][typeDrop]:
                             qty = inv['data'][str(member.id)][typeDrop][oChest]['qty'] + int(oValue)
-                        icon = item['data']['item'][typeDrop][oChest]['icon']
                         inv['data'][str(member.id)][typeDrop][oChest] = {}
                         inv['data'][str(member.id)][typeDrop][oChest]['name'] = str(oChest)
-                        inv['data'][str(member.id)][typeDrop][oChest]['icon'] = icon
                         inv['data'][str(member.id)][typeDrop][oChest]['qty'] = qty
 
                         with open('json/inventory.json', 'w') as f:
@@ -992,10 +987,8 @@ def run_discord_bot():
             await ctx.send(f"**{mention}** Hmm... We can`t find that item!")
             return
         qty = inv['data'][str(member.id)]["consumables"][new_arg]['qty']
-        icon = item['data']['item']["consumables"][new_arg]['icon']
         inv['data'][str(member.id)]["consumables"][new_arg] = {}
         inv['data'][str(member.id)]["consumables"][new_arg]['name'] = str(new_arg)
-        inv['data'][str(member.id)]["consumables"][new_arg]['icon'] = icon
         inv['data'][str(member.id)]["consumables"][new_arg]['qty'] = qty - (int(split[-1]) if is_integer(split[-1]) else 1)
         if qty - (int(split[-1]) if is_integer(split[-1]) else 1) <= 0:
             del inv['data'][str(member.id)]["consumables"][new_arg]
@@ -1060,6 +1053,9 @@ def run_discord_bot():
         with open('json/item.json', 'r') as f:
             item = json.load(f)
 
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
+            return
         text = ''
         count = 0
         for b in buff['data'][str(id)]:
@@ -1085,5 +1081,174 @@ def run_discord_bot():
         embed.add_field(name=f"BOOSTER",value=f"{text}")
 
         await ctx.send(embed=embed)
+
+    class Recipe(View):
+        print('hai1')
+        def __init__(self, author):
+            self.author = author
+            super().__init__()
+
+        @discord.ui.button(label="1",style=discord.ButtonStyle.grey,emoji="<:stoneSword:1052226137184538675>")
+        async def equipment1(self,interaction: discord.Interaction, button: Button):
+            with open('json/item.json', 'r') as i:
+                item = json.load(i)
+            item = item['data']['item']
+            with open('json/recipe.json', 'r') as i:
+                recipe = json.load(i)
+            embed = discord.Embed(color=discord.Colour.random())
+            recipe = recipe['data']['equipments']
+            level = [1,3,5,9,15]
+            for l in level:
+                text = ''
+                for x in recipe:
+                    itemText = ''
+                    itemCount = 0
+                    for key,value in recipe[x].items():
+                        itemCount += 1
+                        if key != 'level':
+                            itemText += f"{value} {item['items'][str(key)]['icon']} {'' if itemCount >= len(recipe[x]) else '+'}"
+                    if l == recipe[x]['level']:
+                        if x in item['equipments']['sword']:
+                            text += f"{item['equipments']['sword'][x]['icon']} **{x}** => {itemText}\n"
+                        elif x in item['equipments']['armor']:
+                            text += f"{item['equipments']['armor'][x]['icon']} **{x}** => {itemText}\n"
+                if text == '':
+                    text = 'The item doesnt not exists yet!'
+                embed.add_field(name=f"Require level {l}",value=f"{text}")
+            await interaction.response.edit_message(embed=embed)
+
+        async def interaction_check(self, interaction: discord.Interaction):
+            return interaction.user.id == self.author.id
+
+    @client.command(name='recipe',aliases=['recipes'])
+    @commands.cooldown(10,1,commands.BucketType.user)
+    async def recipe(ctx,*,arg = 1):
+        member = ctx.author
+
+        id = member.id
+        name = member.display_name
+
+        with open('json/users.json', 'r') as f:
+            data = json.load(f)
+
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
+            return
+        view = Recipe(member)
+        await ctx.send('hai',view=view)
+    
+    @client.command(name='craft',aliases=['crafts'])
+    @commands.cooldown(10,1,commands.BucketType.user)
+    async def craft(ctx,*,arg):
+        member = ctx.author
+
+        id = member.id
+        mention = f"<@{id}>"
+        name = member.display_name
+
+        with open('json/users.json', 'r') as f:
+            data = json.load(f)
+
+        with open('json/inventory.json', 'r') as f:
+            inv = json.load(f)
+
+        with open('json/recipe.json', 'r') as f:
+            recipe = json.load(f)
+
+        with open('json/item.json', 'r') as f:
+            item = json.load(f)
+
+        if str(member.id) not in data['users']:
+            await ctx.send(f'`{prefix}start` to register')
+            return
+
+        split = arg.split()
+        new_arg = str(arg).replace(f" {split[-1]}" if is_integer(split[-1]) else "",'')
+        new_arg = str(new_arg).replace(f" {split[-1]}" if split[-1] == "all" else "",'')
+
+        if new_arg in inv['data'][str(id)]['equipments']:
+            await ctx.send(f'{mention} You already have that sword')
+            return
+        elif new_arg in inv['data'][str(id)]['equipments']:
+            await ctx.send(f'{mention} You already have that armor')
+            return
+        if new_arg in recipe['data']['equipments'] or new_arg in recipe['data']['end'] or new_arg in recipe['data']['special']:
+            
+            if new_arg in recipe['data']['equipments']:
+                recipe = recipe['data']['equipments']
+            elif new_arg in recipe['data']['end']:
+                recipe = recipe['data']['end']
+            elif new_arg in recipe['data']['special']:
+                recipe = recipe['data']['special']
+            
+            if new_arg in item['data']['item']['equipments']['sword']:
+                split[-1] = (1 if is_integer(split[-1]) else 1)
+            elif new_arg in item['data']['item']['equipments']['armor']:
+                split[-1] = (1 if is_integer(split[-1]) else 1)
+
+            if split[-1] == 'all':
+                itemHave = inv['data'][str(id)]['consumables'][new_arg]['qty']
+                split[-1] = itemHave
+                
+
+            needText = ""
+            needItem = ""
+            needCount = 0
+            text = ''
+            for key,value in recipe[new_arg].items():
+                if key != "level":
+                    if new_arg in item['data']['item']['equipments']['sword']:
+                        icon = item['data']['item']['equipments']['sword'][new_arg]['icon']
+                    elif new_arg in item['data']['item']['equipments']['armor']:
+                        icon = item['data']['item']['equipments']['armor'][new_arg]['icon']
+                    elif new_arg in item['data']['item']['items']:
+                        icon = item['data']['item']['items'][new_arg]['icon']
+                    elif new_arg in item['data']['item']['consumables']:
+                        icon = item['data']['item']['consumables'][new_arg]['icon']
+
+                    if key in item['data']['item']['equipments']['sword']:
+                        if key in inv['data'][str(id)]['equipments']:
+                            qty = inv['data'][str(id)]['equipments'][key]['qty']
+                        else:
+                            qty = 0
+                        iconItem = item['data']['item']['equipments']['sword'][key]['icon']
+                    elif key in item['data']['item']['equipments']['armor']:
+                        if key in inv['data'][str(id)]['equipments']:
+                            qty = inv['data'][str(id)]['equipments'][key]['qty']
+                        else:
+                            qty = 0
+                        iconItem = item['data']['item']['equipments']['armor'][key]['icon']
+                    elif key in inv['data'][str(id)]['items']:
+                        if key in inv['data'][str(id)]['items']:
+                            qty = inv['data'][str(id)]['items'][key]['qty']
+                        else:
+                            qty = 0
+                        iconItem = item['data']['item']['items'][key]['icon']
+                    elif key in inv['data'][str(id)]['consumables']:
+                        if key in inv['data'][str(id)]['consumables']:
+                            qty = inv['data'][str(id)]['consumables'][key]['qty']
+                        else:
+                            qty = 0
+                        iconItem = item['data']['item']['consumables'][key]['icon']
+                    if int(qty) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)):
+
+                        needCount += 1
+                    else:
+                        text = f"You Craft {(int(split[-1]) if is_integer(split[-1]) else 1)} {icon} `{new_arg}` successfully"
+
+                    needText += f"~ {iconItem} **{key}** You need {(int(qty)) if (int(qty)) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) else int(value * (int(split[-1]) if is_integer(split[-1]) else 1))}/{value * (int(split[-1]) if is_integer(split[-1]) else 1)}"
+                elif key == 'level' and value > int(data['users'][str(id)]['level']):
+                    await ctx.send(f"**{mention}** Your Level is to low you can`t craft this item")
+                    return
+            embed = discord.Embed(color=discord.Color.random())
+            if needCount >= 1:
+                embed.add_field(name=f"You don't have enough materials",value=f"{needText}")
+                await ctx.send(embed=embed)
+                return
+            else:
+                await ctx.send(text)
+        else:
+            await ctx.send(f"{mention} Hmm... We cant what you looking for \ntry `{prefix}recipe` to find what you looking for")
+            return
 
     client.run(TOKEN)

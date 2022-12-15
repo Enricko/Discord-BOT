@@ -22,11 +22,12 @@ import numpy as np
 # open("json/shop.json", "w").write(
 #     json.dumps(obj, sort_keys=True, indent=2)
 # )
-seconds = 1929123919
-days = seconds // 86400
-hours = (seconds % 86400) // 3600
-minutes = (seconds % 3600) // 60
-seconds = seconds % 60
+# seconds = 1929123919
+# days = seconds // 86400
+# hours = (seconds % 86400) // 3600
+# minutes = (seconds % 3600) // 60
+# seconds = seconds % 60
 
-totalBuff = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
-print(totalBuff)                
+# totalBuff = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
+# print(totalBuff)              
+print(1<2)  
