@@ -29,5 +29,15 @@ import numpy as np
 # seconds = seconds % 60
 
 # totalBuff = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
-# print(totalBuff)              
-print(1<2)  
+# print(totalBuff)      
+b = {
+    "data":{
+        "p": 1,
+        "s":{
+            "m":3
+        }
+    }
+}      
+c = 0
+d = 1  
+print(b)  

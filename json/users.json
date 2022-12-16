@@ -16,16 +16,16 @@
         },
         "491905790966235136": {
             "name": "IcyCoolz",
-            "level": 2,
-            "xp": 122.0,
-            "attack": 2,
-            "defense": 2,
-            "health": 5,
-            "max_health": 105,
-            "gold": 200630,
+            "level": 3,
+            "xp": 290.0,
+            "attack": 10,
+            "defense": 6,
+            "health": 110,
+            "max_health": 110,
+            "gold": 201029,
             "equipments": {
-                "sword": null,
-                "armor": null
+                "sword": "stone sword",
+                "armor": "leather armor"
             }
         }
     }

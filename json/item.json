@@ -21,6 +21,12 @@
                         "attack": 7,
                         "sell": 250
                     },
+                    "iron sword": {
+                        "name": "iron sword",
+                        "icon": "<:ironSword:1053203726397100112>",
+                        "attack": 16,
+                        "sell": 1000
+                    },
                     "diamond sword": {
                         "name": "diamond sword",
                         "icon": "<:diamondSword:1051461128330416240>",
@@ -33,6 +39,18 @@
                         "name": "leather armor",
                         "icon": "<:leatherArmor:1052221741230981181>",
                         "defense": 3,
+                        "sell": 25
+                    },
+                    "snake armor": {
+                        "name": "snake armor",
+                        "icon": "<:snakeArmor:1053196882513498123>",
+                        "defense": 7,
+                        "sell": 25
+                    },
+                    "iron armor": {
+                        "name": "iron armor",
+                        "icon": "<:ironArmor:1053204794283667457>",
+                        "defense": 15,
                         "sell": 25
                     }
                 }
@@ -192,6 +210,16 @@
                     "name":"stone",
                     "icon":"<:stone:1052160341930426389>",
                     "sell": 5
+                },
+                "iron":{
+                    "name":"iron",
+                    "icon":"<:iron:1053190533436162109>",
+                    "sell": 25
+                },
+                "snake skin":{
+                    "name":"snake skin",
+                    "icon":"<:snakeSkin:1053199033365176340>",
+                    "sell": 100
                 }
             }
         }

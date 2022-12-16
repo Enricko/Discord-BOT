@@ -1,17 +1,17 @@
 {
     "data":{
         "monster":{
-            "slime":{
-                "normal chest":{
-                    "name":"normal chest",
-                    "chance": 10
+            "snake":{
+                "snake skin":{
+                    "name":"snake skin",
+                    "chance": 5000
                 }
             }
         },
         "random drop":{
             "normal chest":{
                 "name":"normal chest",
-                "chance": 100000
+                "chance": 1000
             },
             "boost chest":{
                 "name":"boost chest",

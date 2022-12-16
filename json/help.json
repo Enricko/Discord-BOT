@@ -1,10 +1,68 @@
 {
     "data":{
         "commands":{
-            "statistic":{},
+            "statistic":{
+                "profile":{
+                    "description": "Show your current profile such as level, health, attack, defense, equipments, and currency",
+                    "usage": "`profile [@player]`",
+                    "aliases" : "`p`"
+                },
+                "inventory":{
+                    "description": "Showing all of your items\nYou can check your Equipments, Items, Consumables",
+                    "usage": "`inventory [equipment | item | consumable]`",
+                    "aliases" : "`inv`,`i`"
+                },
+                "cooldown":{
+                    "description": "Showing all of your Cooldowns time",
+                    "usage": "`cooldown`",
+                    "aliases" : "`cd`"
+                },
+                "boost":{
+                    "description": "Showing all of your used booster and see the booster time left",
+                    "usage": "`boost`",
+                    "aliases" : "`buff`"
+                }
+            },
             "fighting":{},
-            "economy":{},
-            "working":{},
+            "economy":{
+                "shop":{
+                    "description": "Show what we sell using gold currency.\nYou can buy anything unless your gold is enough using `.buy`",
+                    "usage": "`shop`",
+                    "aliases" : "`shops`"
+                },
+                "buy":{
+                    "description": "Used to buy anything on the `.shop` with gold currency",
+                    "usage": "`buy [item] [amount]`",
+                    "aliases" : "None"
+                },
+                "sell":{
+                    "description": "Used to sell anything from all your item on `.inventory` and get some gold",
+                    "usage": "`sell [item] [amount]`",
+                    "aliases" : "None"
+                },
+                "use":{
+                    "description": "Used to use anything from all your item on `.inventory [consumable]`",
+                    "usage": "`use [item] [amount]`",
+                    "aliases" : "None"
+                }
+            },
+            "working":{
+                "recipe":{
+                    "description": "Show all the recipes,you can craft `.craft` them \nif u have enough material and level to do so",
+                    "usage": "`recipe [page]`",
+                    "aliases" : "`recipes`" 
+                },
+                "craft":{
+                    "description": "Used to craft an item that display on `.recipe [page]` \nif you have enough material and level you can craft it",
+                    "usage": "`craft [item] [amount]`",
+                    "aliases" : "`crafts`" 
+                },
+                "dismantle":{
+                    "description": "Used to dismantle an item that you dont want to \n**NOTE YOU CAN'T DISMANTLE EQUIPMENT AND CONSUMABLE EXCEPT ITEMS**",
+                    "usage": "`dismantle [item] [amount]`",
+                    "aliases" : "`dis`" 
+                }
+            },
             "gambling":{},
             "extra":{},
             "donator":{},

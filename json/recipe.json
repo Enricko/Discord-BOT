@@ -4,10 +4,40 @@
             "stone sword":{
                 "level": 1,
                 "stone": 20
+            },
+            "iron sword":{
+                "level": 3,
+                "stone": 5,
+                "iron": 10
+            },
+            "snake armor":{
+                "level":1,
+                "snake skin":3
+            },
+            "iron armor":{
+                "level":3,
+                "iron":20
             }
         },
         "end":{},
-        "dismantle":{},
-        "special":{}
+        "craft":{
+            "iron" :{
+                "stone": 10
+            }
+        },
+        "dismantle":{
+            "iron": {
+                "iron": 1,
+                "get":{
+                    "stone": 8
+                }
+            }
+        },
+        "special":{
+            "health potion":{
+                "level": 1,
+                "stone": 10
+            }
+        }
     }
 }

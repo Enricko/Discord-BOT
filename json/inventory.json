@@ -8,27 +8,40 @@
                 },
                 "stone sword": {
                     "name": "stone sword",
-                    "attack": 3
+                    "attack": 7
+                },
+                "leather armor": {
+                    "name": "leather armor",
+                    "icon": "<:leatherArmor:1052221741230981181>",
+                    "defense": 3
                 }
             },
             "items": {
                 "stone": {
                     "name": "stone",
-                    "qty": 2066
+                    "qty": 5058
+                },
+                "snake skin": {
+                    "name": "snake skin",
+                    "qty": 1
+                },
+                "iron": {
+                    "name": "iron",
+                    "qty": 13
                 }
             },
             "consumables": {
+                "health potion": {
+                    "name": "health potion",
+                    "qty": 554
+                },
                 "normal chest": {
                     "name": "normal chest",
-                    "qty": 9802
+                    "qty": 9836
                 },
                 "boost chest": {
                     "name": "boost chest",
                     "qty": 9493
-                },
-                "health potion": {
-                    "name": "health potion",
-                    "qty": 546
                 },
                 "small xp boost": {
                     "name": "small xp boost",
@@ -40,7 +53,7 @@
                 },
                 "small drop boost": {
                     "name": "small drop boost",
-                    "qty": 707
+                    "qty": 606
                 },
                 "medium xp boost": {
                     "name": "medium xp boost",
@@ -52,7 +65,7 @@
                 },
                 "medium drop boost": {
                     "name": "medium drop boost",
-                    "qty": 476
+                    "qty": 376
                 },
                 "large xp boost": {
                     "name": "large xp boost",
@@ -64,7 +77,7 @@
                 },
                 "large drop boost": {
                     "name": "large drop boost",
-                    "qty": 65
+                    "qty": 55
                 }
             }
         },
