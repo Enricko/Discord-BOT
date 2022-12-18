@@ -19,14 +19,6 @@ def run_discord_bot():
     client.remove_command('help')
 
 
-    # mydb = mysql.connector.connect(
-    #     host = "localhost",
-    #     user = "root",
-    #     password = "",
-    #     database = "level_discord"
-    # )
-
-    # cursor = mydb.cursor(dictionary=True)
 
     @client.event
     async def on_ready():
@@ -47,7 +39,14 @@ def run_discord_bot():
             # msg = f"**<@{id}>** Still on cooldown, Please try again in {cooldown}"
             msg = f"**<@{id}>** Slowdown, try again in 1 seconds"
             await ctx.send(msg)
-
+    
+    @client.command()
+    @client.slash_command(name="ping")
+    async def ping(ctx):
+        before = time.monotonic()
+        message = await ctx.send("Pong!")
+        ping = (time.monotonic() - before) * 1000
+        await message.edit(content=f"Pong!  `{int(ping)}ms`")
     @client.command()
     async def start(ctx):
         with open('json/users.json', 'r') as f:
