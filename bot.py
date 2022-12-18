@@ -14,7 +14,6 @@ import asyncio
 
 
 def run_discord_bot():
-    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.Gl0-Rk.WeLe_roiC9GWh2JHjged3HoQlEy0D-gmqiScWY'
     prefix = "."
     client = commands.Bot(command_prefix=prefix,intents=discord.Intents.all())
     client.remove_command('help')
@@ -149,7 +148,7 @@ def run_discord_bot():
                 commands = x
 
         if arg == '':
-            embed = discord.Embed(title=f"All Commands",description=f"Get more information about a spesific with `{prefix}help [command_name]/[items]`\n [INVITE ME](https://discord.com/api/oauth2/authorize?client_id=913783532185354261&permissions=534723950656&scope=bot)",color=discord.Colour.random())
+            embed = discord.Embed(title=f"All Commands",description=f"Get more information about a spesific with\n`{prefix}help [command_name | items_name]`\n [INVITE ME](https://discord.com/api/oauth2/authorize?client_id=913783532185354261&permissions=534723950656&scope=bot)",color=discord.Colour.random())
             embed.set_author(name="commands",icon_url=f"{client.user.display_avatar}")
             for h in help['commands']:
                 commandText = ""
@@ -161,7 +160,6 @@ def run_discord_bot():
                     commandText += "Wait for another update!"
                 embed.add_field(name=f"{h}".title(),value=f"{commandText}",inline=False)
             embed.set_footer(text=f"Wanna see more command? do {prefix}help")
-            print('in3')
             await ctx.send(embed=embed)
             return
 
@@ -197,6 +195,9 @@ def run_discord_bot():
         with open('json/item.json', 'r') as f:
           item = json.load(f)
 
+        with open('json/inventory.json', 'r') as f:
+          inv = json.load(f)
+
         if str(member.id) not in data['users']:
             await ctx.send(f'`{prefix}start` to register')
             return
@@ -208,13 +209,14 @@ def run_discord_bot():
         xp_range = f"{int(user['xp'])} / {int(user['level'] * 100 * 1.35)}"
 
         gold = "{:,}".format(user['gold'])
-
+        swordEnchant = inv['data'][str(id)]['equipments'][user['equipments']['sword']]['enchant']
+        armorEnchant = inv['data'][str(id)]['equipments'][user['equipments']['armor']]['enchant']
         embed = discord.Embed(title="Adventure Lover",colour=discord.Colour.random())
         embed.set_author(name=f"{name}",icon_url=f"{pfp}")
         embed.set_thumbnail(url=f"{pfp}")
         embed.add_field(name="PROGRESS",value=f"**Level** : {user['level']} ({level_persentage}%)\n**Xp** : {xp_range}")
         embed.add_field(name="STATS",value=f"**:crossed_swords: Att** : {user['attack']}\n** :shield: Def** : {user['defense']}\n**:heart: Hp** : {user['health']} / {user['max_health']}")
-        embed.add_field(name="EQUIPMENTS",value=f"**{('Sword not equip' if user['equipments']['sword'] == None else icon_eq['sword'][user['equipments']['sword']]['icon'])}**\n**{('Armor not equip' if user['equipments']['armor'] == None else icon_eq['armor'][user['equipments']['armor']]['icon'])}**")
+        embed.add_field(name="EQUIPMENTS",value=f"**{('Sword not equip' if user['equipments']['sword'] == None else icon_eq['sword'][user['equipments']['sword']]['icon'] + f'[{str(swordEnchant).upper()}]')}**\n**{('Armor not equip' if user['equipments']['armor'] == None else icon_eq['armor'][user['equipments']['armor']]['icon'] + f'[{str(armorEnchant).upper()}]')}**")
         embed.add_field(name="CURRENCY",value=f"**:coin: Gold** : {gold}\n")
 
         await ctx.send(embed=embed)
@@ -448,6 +450,9 @@ def run_discord_bot():
         with open('json/inventory.json', 'r') as i:
             inv = json.load(i)
 
+        with open('json/enchant.json', 'r') as i:
+            enchant = json.load(i)
+
 
         if str(member.id) not in data['users']:
             await ctx.send(f'**{name}**`{prefix}start` to register')
@@ -469,25 +474,28 @@ def run_discord_bot():
         elif user_armor == arg:
             await ctx.send(f"**{name}** You already equip `{arg}`")
             return
-
-        if str(arg) in item['data']['item']['equipments'][type_item]:
-            if str(arg) not in inv['data'][str(id)]['equipments']:
-                text = f"Um... you dont have that item check your {prefix}inv"
-            if 'sword' in arg:
-                add_attack = item['data']['item']['equipments'][type_item][arg]['attack']
-                if user_sword != None:
-                    add_attack -= item['data']['item']['equipments'][type_item][user_sword]['attack']
-                user_sword = arg
-                text = f"Have equip `{arg}` and increase your attack :crossed_swords: by {item['data']['item']['equipments']['sword'][arg]['attack']}"
-            elif 'armor' in arg:
-                add_defense = item['data']['item']['equipments'][type_item][arg]['defense']
-                if user_armor != None:
-                    add_defense -= item['data']['item']['equipments'][type_item][user_armor]['defense']
-                user_armor = arg
-                text = f"Have equip `{arg}` and increase your defense :shield: by {item['data']['item']['equipments']['armor'][arg]['defense']}"
-        else:
-            text = f" Um... We couldn`t find that item check your {prefix}inv"
-
+        itemEnchant = inv['data'][str(id)]['equipments'][arg]['enchant']
+        try:
+            if str(arg) in item['data']['item']['equipments'][type_item]:
+                if str(arg) not in inv['data'][str(id)]['equipments']:
+                    text = f"Um... you dont have that item check your {prefix}inv"
+                if 'sword' in arg:
+                    add_attack = int(item['data']['item']['equipments'][type_item][arg]['attack'] * ((enchant['data'][itemEnchant] / 100) + 1))
+                    if user_sword != None:
+                        add_attack -= int(item['data']['item']['equipments'][type_item][user_sword]['attack'] * ((enchant['data'][itemEnchant] / 100) + 1))
+                    user_sword = arg
+                    text = f"Have equip `{arg}` and increase your attack :crossed_swords: by {int(item['data']['item']['equipments']['sword'][arg]['attack'] * ((enchant['data'][itemEnchant] / 100) + 1))}"
+                elif 'armor' in arg:
+                    add_defense = int(item['data']['item']['equipments'][type_item][arg]['defense']* ((enchant['data'][itemEnchant] / 100) + 1))
+                    if user_armor != None:
+                        add_defense -= int(item['data']['item']['equipments'][type_item][user_armor]['defense']* ((enchant['data'][itemEnchant] / 100) + 1))
+                    user_armor = arg
+                    text = f"Have equip `{arg}` and increase your defense :shield: by {int(item['data']['item']['equipments']['armor'][arg]['defense'] * ((enchant['data'][itemEnchant] / 100) + 1))}"
+            else:
+                text = f" Um... We couldn`t find that item check your {prefix}inv"
+        except Exception as e:
+            print(e)
+            pass
         newData = {
             "attack" : user['attack'] + add_attack,
             "defense" : user['defense'] + add_defense,
@@ -718,15 +726,17 @@ def run_discord_bot():
                     await ctx.send(f'**{name}** You can`t stack an equipments!')
                     return
                 elif 'sword' in new_arg:
+                    icon = item['data']['item']['equipments']['sword'][new_arg]['icon']
                     inv['data'][str(member.id)]['equipments'][new_arg] = {}
                     inv['data'][str(member.id)]['equipments'][new_arg]['name'] = item['data']['item']['equipments']['sword'][new_arg]['name']
-                    inv['data'][str(member.id)]['equipments'][new_arg]['icon'] = item['data']['item']['equipments']['sword'][new_arg]['icon']
                     inv['data'][str(member.id)]['equipments'][new_arg]['attack'] = item['data']['item']['equipments']['sword'][new_arg]['attack']
+                    inv['data'][str(member.id)]['equipments'][new_arg]['enchant'] = None
                 elif 'armor' in new_arg:
+                    icon = item['data']['item']['equipments']['armor'][new_arg]['icon']
                     inv['data'][str(member.id)]['equipments'][new_arg] = {}
                     inv['data'][str(member.id)]['equipments'][new_arg]['name'] = item['data']['item']['equipments']['armor'][new_arg]['name']
-                    inv['data'][str(member.id)]['equipments'][new_arg]['icon'] = item['data']['item']['equipments']['armor'][new_arg]['icon']
                     inv['data'][str(member.id)]['equipments'][new_arg]['defense'] = item['data']['item']['equipments']['armor'][new_arg]['defense']
+                    inv['data'][str(member.id)]['equipments'][new_arg]['enchant'] = None
 
                 
                 
@@ -737,7 +747,6 @@ def run_discord_bot():
                 icon = item['data']['item']['consumables'][new_arg]['icon']
                 inv['data'][str(member.id)]['consumables'][new_arg] = {}
                 inv['data'][str(member.id)]['consumables'][new_arg]['name'] = str(new_arg)
-                inv['data'][str(member.id)]['consumables'][new_arg]['icon'] = icon
                 inv['data'][str(member.id)]['consumables'][new_arg]['qty'] = qty
         else:
             await ctx.send('We can`t find what you looking for!')
@@ -759,7 +768,7 @@ def run_discord_bot():
         with open('json/inventory.json','w') as i:
             json.dump(inv,i,indent=4)
         
-        await ctx.send(f"**{name}** bought `{arg}`")
+        await ctx.send(f"**{name}** bought {icon}`{arg}`")
                 
     @client.command(name="sell")
     @commands.cooldown(3,1,commands.BucketType.user)
@@ -1105,7 +1114,6 @@ def run_discord_bot():
         await ctx.send(embed=embed)
 
     class Recipe(View):
-        print('hai1')
         def __init__(self, author):
             self.author = author
             super().__init__()
@@ -1113,6 +1121,16 @@ def run_discord_bot():
         @discord.ui.button(label="1",style=discord.ButtonStyle.grey,emoji="<:stoneSword:1052226137184538675>")
         async def equipment1(self,interaction: discord.Interaction, button: Button):
             embed = pageRecipe.equipment1()
+            await interaction.response.edit_message(embed=embed)
+
+        @discord.ui.button(label="3",style=discord.ButtonStyle.grey,emoji="<:iron:1053190533436162109>")
+        async def dismantle(self,interaction: discord.Interaction, button: Button):
+            embed = pageRecipe.dismantle()
+            await interaction.response.edit_message(embed=embed)
+
+        @discord.ui.button(label="4",style=discord.ButtonStyle.grey,emoji="<:iron:1053190533436162109>")
+        async def special(self,interaction: discord.Interaction, button: Button):
+            embed = pageRecipe.special()
             await interaction.response.edit_message(embed=embed)
 
         async def interaction_check(self, interaction: discord.Interaction):
@@ -1125,8 +1143,7 @@ def run_discord_bot():
             item = item['data']['item']
             with open('json/recipe.json', 'r') as i:
                 recipe = json.load(i)
-            embed = discord.Embed(color=discord.Colour.random())
-            embed.set_author(name=f"Recipe Page 1")
+            embed = embed = discord.Embed(title=f"Recipe Page ",description=f"See more recipes with `{prefix}recipe [1 | 2 | 3 | 4]`",color=discord.Colour.random())
             recipe = recipe['data']['equipments']
             level = [1,3,5,9,15]
             count = 0
@@ -1149,9 +1166,59 @@ def run_discord_bot():
                     text = 'The item doesnt not exists yet!'
                 embed.add_field(name=f"Require level {l}",value=f"{text}",inline=False)
             return embed
+        def dismantle():
+            with open('json/item.json', 'r') as i:
+                item = json.load(i)
+            item = item['data']['item']
+            with open('json/recipe.json', 'r') as i:
+                recipe = json.load(i)
+            embed = discord.Embed(title=f"Recipe Page 3",description=f"See more recipes with `{prefix}recipe [1 | 2 | 3 | 4]`",color=discord.Colour.random())
+            recipe = recipe['data']['craft']
+            text = ''
+            for x in recipe:
+                itemText = ''
+                for key, val in recipe[x].items():
+                    itemText += f"{val} {item['items'][key]['icon']}"
+                text += f"{item['items'][x]['icon']} **{x}** = {itemText}"
+            embed.add_field(name="Item Recipes",value=f"{text}")
+
+            return embed
+        def special():
+            with open('json/item.json', 'r') as i:
+                item = json.load(i)
+            item = item['data']['item']
+            with open('json/recipe.json', 'r') as i:
+                recipe = json.load(i)
+            embed = discord.Embed(title=f"Recipe Page 4",description=f"See more recipes with `{prefix}recipe [1 | 2 | 3 | 4]`",color=discord.Colour.random())
+            recipe = recipe['data']['special']
+            text = ''
+            for x in recipe:
+                itemText = ''
+                itemCount = 0
+                for key, val in recipe[x].items():
+                    itemCount += 1
+                    if key in item['equipments']['sword']:
+                        itemText += f"{val} {item['equipments']['sword'][key]['icon']}{'' if itemCount >= len(recipe[x]) else ' + '}"
+                    elif key in item['equipments']['armor']:
+                        itemText += f"{val} {item['equipments']['armor'][key]['icon']}{'' if itemCount >= len(recipe[x]) else ' + '}"
+                    elif key in item['consumables']:
+                        itemText += f"{val} {item['consumables'][key]['icon']}{'' if itemCount >= len(recipe[x]) else ' + '}"
+                    elif key in item['items']:
+                        itemText += f"{val} {item['items'][key]['icon']}{'' if itemCount >= len(recipe[x]) else ' + '}"
+                if x in item['equipments']['sword']:
+                    text += f"{item['equipments']['sword'][x]['icon']} **{x}** = {itemText}"
+                elif x in item['equipments']['armor']:
+                    text += f"{item['equipments']['armor'][x]['icon']} **{x}** = {itemText}"
+                elif x in item['consumables']:
+                    text += f"{item['consumables'][x]['icon']} **{x}** = {itemText}"
+                elif x in item['items']:
+                    text += f"{item['items'][x]['icon']} **{x}** = {itemText}"
+            embed.add_field(name="Special Items",value=f"{text}")
+
+            return embed
     @client.command(name='recipe',aliases=['recipes'])
     @commands.cooldown(10,1,commands.BucketType.user)
-    async def recipe(ctx,*,arg = 1):
+    async def recipe(ctx,arg = ''):
         member = ctx.author
 
         id = member.id
@@ -1160,14 +1227,21 @@ def run_discord_bot():
         with open('json/users.json', 'r') as f:
             data = json.load(f)
 
+        view = Recipe(member)
         if str(member.id) not in data['users']:
             await ctx.send(f'`{prefix}start` to register')
             return
+            
         if arg == '1' or arg == 'basic':
             embed = pageRecipe.equipment1()
             await ctx.send(embed=embed,view=view)
+        elif arg == '3' or arg in ['craft','items','dismantle']:
+            embed = pageRecipe.dismantle()
+            await ctx.send(embed=embed,view=view)
+        elif arg == '4' or arg in ['special']:
+            embed = pageRecipe.special()
+            await ctx.send(embed=embed,view=view)
         else:
-            view = Recipe(member)
             embed = pageRecipe.equipment1()
             await ctx.send(embed=embed,view=view)
     
@@ -1206,147 +1280,154 @@ def run_discord_bot():
         elif new_arg in inv['data'][str(id)]['equipments']:
             await ctx.send(f'{mention} You already have that armor')
             return
-        if new_arg in recipe['data']['equipments'] or new_arg in recipe['data']['craft'] or new_arg in recipe['data']['end'] or new_arg in recipe['data']['special']:
-            
-            if new_arg in recipe['data']['equipments']:
-                recipe = recipe['data']['equipments']
-            elif new_arg in recipe['data']['end']:
-                recipe = recipe['data']['end']
-            elif new_arg in recipe['data']['special']:
-                recipe = recipe['data']['special']
-            elif new_arg in recipe['data']['craft']:
-                recipe = recipe['data']['craft']
-            
-            if new_arg in item['data']['item']['equipments']['sword']:
-                split[-1] = (1 if is_integer(split[-1]) else 1)
-            elif new_arg in item['data']['item']['equipments']['armor']:
-                split[-1] = (1 if is_integer(split[-1]) else 1)
-            if split[-1] == 'all':
-                allItem = []
-                for x,y in recipe[new_arg].items():
-                    if x != 'level':
-                        if x in item['data']['item']['equipments']['sword']:
-                            if x in inv['data'][str(id)]['equipments']:
-                                allItem.append(1)
+        try:
+            if new_arg in recipe['data']['equipments'] or new_arg in recipe['data']['craft'] or new_arg in recipe['data']['end'] or new_arg in recipe['data']['special']:
+                
+                if new_arg in recipe['data']['equipments']:
+                    recipe = recipe['data']['equipments']
+                elif new_arg in recipe['data']['end']:
+                    recipe = recipe['data']['end']
+                elif new_arg in recipe['data']['special']:
+                    recipe = recipe['data']['special']
+                elif new_arg in recipe['data']['craft']:
+                    recipe = recipe['data']['craft']
+                
+                if new_arg in item['data']['item']['equipments']['sword']:
+                    split[-1] = (1 if is_integer(split[-1]) else 1)
+                elif new_arg in item['data']['item']['equipments']['armor']:
+                    split[-1] = (1 if is_integer(split[-1]) else 1)
+                if split[-1] == 'all':
+                    allItem = []
+                    print('in')
+                    for x,y in recipe[new_arg].items():
+                        if x != 'level':
+                            if x in item['data']['item']['equipments']['sword']:
+                                if x in inv['data'][str(id)]['equipments']:
+                                    allItem.append(1)
+                                else:
+                                    allItem.append(0)
+                            elif x in item['data']['item']['equipments']['armor']:
+                                if x in inv['data'][str(id)]['equipments']:
+                                    allItem.append(1)
+                                else:
+                                    allItem.append(0)
+                            elif x in item['data']['item']['items']:
+                                if x in inv['data'][str(id)]['items']:
+                                    allItem.append(inv['data'][str(id)]['items'][x]['qty']// int(y))
+                                else:
+                                    allItem.append(0)
+                            elif x in item['data']['item']['consumables']:
+                                if x in inv['data'][str(id)]['items']:
+                                    allItem.append(inv['data'][str(id)]['items'][x]['qty'] // int(y))
+                                else:
+                                    allItem.append(0)
+                        elif x == 'level' and y > int(data['users'][str(id)]['level']):
+                            await ctx.send(f"**{mention}** Your Level is to low you can`t craft this item")
+                            return
+                    if int(min(allItem)) <= 0:
+                        split[-1] = int(1)
+                    else:
+                        split[-1] = int(min(allItem))
+
+                if new_arg in item['data']['item']['equipments']['sword']:
+                    inv['data'][str(id)]['equipments'][new_arg] = {} 
+                    inv['data'][str(id)]['equipments'][new_arg]['name'] = str(new_arg) 
+                    inv['data'][str(id)]['equipments'][new_arg]['attack'] = int(item['data']['item']['equipments']['sword'][new_arg]['attack'])
+                    inv['data'][str(id)]['equipments'][new_arg]['enchant'] = None
+                elif new_arg in item['data']['item']['equipments']['armor']:
+                    inv['data'][str(id)]['equipments'][new_arg] = {} 
+                    inv['data'][str(id)]['equipments'][new_arg]['name'] = str(new_arg) 
+                    inv['data'][str(id)]['equipments'][new_arg]['defense'] = int(item['data']['item']['equipments']['armor'][new_arg]['defense'])
+                    inv['data'][str(id)]['equipments'][new_arg]['enchant'] = None
+                elif new_arg in item['data']['item']['items']:
+                    qtyMat = 0
+                    if new_arg in inv['data'][str(id)]['items']:
+                        qtyMat = inv['data'][str(id)]['items'][new_arg]['qty']  
+                    inv['data'][str(id)]['items'][new_arg] = {} 
+                    inv['data'][str(id)]['items'][new_arg]['name'] = str(new_arg) 
+                    inv['data'][str(id)]['items'][new_arg]['qty'] = qtyMat + (int(split[-1]) if is_integer(split[-1]) else 1)
+                elif new_arg in item['data']['item']['consumables']:
+                    qtyMat = 0
+                    if new_arg in inv['data'][str(id)]['consumables']:
+                        qtyMat = inv['data'][str(id)]['consumables'][new_arg]['qty'] 
+                    inv['data'][str(id)]['consumables'][new_arg] = {} 
+                    inv['data'][str(id)]['consumables'][new_arg]['name'] = str(new_arg) 
+                    inv['data'][str(id)]['consumables'][new_arg]['qty'] = qtyMat + (int(split[-1]) if is_integer(split[-1]) else 1) 
+                    
+
+                needText = ""
+                needItem = ""
+                needCount = 0
+                text = ''
+                qty = 0
+                for key,value in recipe[new_arg].items():
+                    if key != "level":
+                        if new_arg in item['data']['item']['equipments']['sword']:
+                            icon = item['data']['item']['equipments']['sword'][new_arg]['icon']
+                        elif new_arg in item['data']['item']['equipments']['armor']:
+                            icon = item['data']['item']['equipments']['armor'][new_arg]['icon']
+                        elif new_arg in item['data']['item']['items']:
+                            icon = item['data']['item']['items'][new_arg]['icon']
+                        elif new_arg in item['data']['item']['consumables']:
+                            icon = item['data']['item']['consumables'][new_arg]['icon']
+
+                        if key in item['data']['item']['equipments']['sword']:
+                            if key in inv['data'][str(id)]['equipments']:
+                                qty = 1
+                                del inv['data'][str(id)]['equipments'][key]
                             else:
-                                allItem.append(0)
-                        elif x in item['data']['item']['equipments']['armor']:
-                            if x in inv['data'][str(id)]['equipments']:
-                                allItem.append(1)
+                                qty = 0
+                            iconItem = item['data']['item']['equipments']['sword'][key]['icon']
+                        elif key in item['data']['item']['equipments']['armor']:
+                            if key in inv['data'][str(id)]['equipments']:
+                                qty = 1
+                                del inv['data'][str(id)]['equipments'][key]
                             else:
-                                allItem.append(0)
-                        elif x in item['data']['item']['items']:
-                            if x in inv['data'][str(id)]['items']:
-                                allItem.append(inv['data'][str(id)]['items'][x]['qty']// int(y))
+                                qty = 0
+                            iconItem = item['data']['item']['equipments']['armor'][key]['icon']
+                        elif key in item['data']['item']['items']:
+                            if key in inv['data'][str(id)]['items']:
+                                qty = inv['data'][str(id)]['items'][key]['qty']
+                                inv['data'][str(id)]['items'][key]['qty'] = qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1))
+                                if qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) <= 0:
+                                    del inv['data'][str(id)]['items'][key]
                             else:
-                                allItem.append(0)
-                        elif x in item['data']['item']['consumables']:
-                            if x in inv['data'][str(id)]['items']:
-                                allItem.append(inv['data'][str(id)]['items'][x]['qty'] // int(y))
+                                qty = 0
+                            iconItem = item['data']['item']['items'][key]['icon']
+                        elif key in item['data']['item']['consumables']:
+                            if key in inv['data'][str(id)]['consumables']:
+                                qty = inv['data'][str(id)]['consumables'][key]['qty']
+                                inv['data'][str(id)]['consumables'][key]['qty'] = qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1))
+                                if qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) <= 0:
+                                    del inv['data'][str(id)]['consumables'][key]
                             else:
-                                allItem.append(0)
-                    elif x == 'level' and y > int(data['users'][str(id)]['level']):
+                                qty = 0
+                            iconItem = item['data']['item']['consumables'][key]['icon']
+                        if int(qty) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)):
+
+                            needCount += 1
+                        else:
+                            text = f"You Craft {(int(split[-1]) if is_integer(split[-1]) else 1)} {icon} `{new_arg}` successfully"
+
+                        needText += f"~ {iconItem} **{key}** You need {(int(qty)) if (int(qty)) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) else int(value * (int(split[-1]) if is_integer(split[-1]) else 1))}/{value * (int(split[-1]) if is_integer(split[-1]) else 1)}\n"
+                    elif key == 'level' and value > int(data['users'][str(id)]['level']):
                         await ctx.send(f"**{mention}** Your Level is to low you can`t craft this item")
                         return
-            if int(min(allItem)) <= 0:
-                split[-1] = int(1)
-            else:
-                split[-1] = int(min(allItem))
-
-            if new_arg in item['data']['item']['equipments']['sword']:
-                inv['data'][str(id)]['equipments'][new_arg] = {} 
-                inv['data'][str(id)]['equipments'][new_arg]['name'] = str(new_arg) 
-                inv['data'][str(id)]['equipments'][new_arg]['attack'] = int(item['data']['item']['equipments']['sword'][new_arg]['attack'])
-            elif new_arg in item['data']['item']['equipments']['armor']:
-                inv['data'][str(id)]['equipments'][new_arg] = {} 
-                inv['data'][str(id)]['equipments'][new_arg]['name'] = str(new_arg) 
-                inv['data'][str(id)]['equipments'][new_arg]['defense'] = int(item['data']['item']['equipments']['armor'][new_arg]['defense'])
-            elif new_arg in item['data']['item']['items']:
-                qtyMat = 0
-                if new_arg in inv['data'][str(id)]['items']:
-                    qtyMat = inv['data'][str(id)]['items'][new_arg]['qty']  
-                inv['data'][str(id)]['items'][new_arg] = {} 
-                inv['data'][str(id)]['items'][new_arg]['name'] = str(new_arg) 
-                inv['data'][str(id)]['items'][new_arg]['qty'] = qtyMat + (int(split[-1]) if is_integer(split[-1]) else 1)
-            elif new_arg in item['data']['item']['consumables']:
-                qtyMat = 0
-                if new_arg in inv['data'][str(id)]['consumables']:
-                    qtyMat = inv['data'][str(id)]['consumables'][new_arg]['qty'] 
-                inv['data'][str(id)]['consumables'][new_arg] = {} 
-                inv['data'][str(id)]['consumables'][new_arg]['name'] = str(new_arg) 
-                inv['data'][str(id)]['consumables'][new_arg]['qty'] = qtyMat + (int(split[-1]) if is_integer(split[-1]) else 1) 
-                
-
-            needText = ""
-            needItem = ""
-            needCount = 0
-            text = ''
-            qty = 0
-            for key,value in recipe[new_arg].items():
-                if key != "level":
-                    if new_arg in item['data']['item']['equipments']['sword']:
-                        icon = item['data']['item']['equipments']['sword'][new_arg]['icon']
-                    elif new_arg in item['data']['item']['equipments']['armor']:
-                        icon = item['data']['item']['equipments']['armor'][new_arg]['icon']
-                    elif new_arg in item['data']['item']['items']:
-                        icon = item['data']['item']['items'][new_arg]['icon']
-                    elif new_arg in item['data']['item']['consumables']:
-                        icon = item['data']['item']['consumables'][new_arg]['icon']
-
-                    if key in item['data']['item']['equipments']['sword']:
-                        if key in inv['data'][str(id)]['equipments']:
-                            qty = 1
-                            del inv['data'][str(id)]['equipments'][key]
-                        else:
-                            qty = 0
-                        iconItem = item['data']['item']['equipments']['sword'][key]['icon']
-                    elif key in item['data']['item']['equipments']['armor']:
-                        if key in inv['data'][str(id)]['equipments']:
-                            qty = 1
-                            del inv['data'][str(id)]['equipments'][key]
-                        else:
-                            qty = 0
-                        iconItem = item['data']['item']['equipments']['armor'][key]['icon']
-                    elif key in item['data']['item']['items']:
-                        if key in inv['data'][str(id)]['items']:
-                            qty = inv['data'][str(id)]['items'][key]['qty']
-                            inv['data'][str(id)]['items'][key]['qty'] = qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1))
-                            if qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) <= 0:
-                                del inv['data'][str(id)]['items'][key]
-                        else:
-                            qty = 0
-                        iconItem = item['data']['item']['items'][key]['icon']
-                    elif key in item['data']['item']['consumables']:
-                        if key in inv['data'][str(id)]['consumables']:
-                            qty = inv['data'][str(id)]['consumables'][key]['qty']
-                            inv['data'][str(id)]['consumables'][key]['qty'] = qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1))
-                            if qty - int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) <= 0:
-                                del inv['data'][str(id)]['consumables'][key]
-                        else:
-                            qty = 0
-                        iconItem = item['data']['item']['consumables'][key]['icon']
-                    if int(qty) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)):
-
-                        needCount += 1
-                    else:
-                        text = f"You Craft {(int(split[-1]) if is_integer(split[-1]) else 1)} {icon} `{new_arg}` successfully"
-
-                    needText += f"~ {iconItem} **{key}** You need {(int(qty)) if (int(qty)) < int(value * (int(split[-1]) if is_integer(split[-1]) else 1)) else int(value * (int(split[-1]) if is_integer(split[-1]) else 1))}/{value * (int(split[-1]) if is_integer(split[-1]) else 1)}\n"
-                elif key == 'level' and value > int(data['users'][str(id)]['level']):
-                    await ctx.send(f"**{mention}** Your Level is to low you can`t craft this item")
+                embed = discord.Embed(color=discord.Color.random())
+                if needCount >= 1:
+                    embed.add_field(name=f"You don't have enough materials",value=f"{needText}")
+                    await ctx.send(embed=embed)
                     return
-            embed = discord.Embed(color=discord.Color.random())
-            if needCount >= 1:
-                embed.add_field(name=f"You don't have enough materials",value=f"{needText}")
-                await ctx.send(embed=embed)
-                return
+                else:
+                    with open('json/inventory.json', 'w') as f:
+                        json.dump(inv, f, indent=4)
+                    await ctx.send(text)
             else:
-                with open('json/inventory.json', 'w') as f:
-                    json.dump(inv, f, indent=4)
-                await ctx.send(text)
-        else:
-            await ctx.send(f"{mention} Hmm... We cant find what you looking for \ntry `{prefix}recipe` to find what you looking for")
-            return
+                await ctx.send(f"{mention} Hmm... We cant find what you looking for \ntry `{prefix}recipe` to find what you looking for")
+                return
+        except Exception as e:
+            print(e)
+            pass
     
     @client.command(name='dismantle',aliases=['dis'])
     @commands.cooldown(10,1,commands.BucketType.user)
@@ -1439,5 +1520,110 @@ def run_discord_bot():
             await ctx.send(f"{mention} Hmm... We cant find what you trying to dismantle")
             return
 
+    @client.command(name='enchant',aliases=['e'])
+    @commands.cooldown(10,1,commands.BucketType.user)
+    async def enchant(ctx,*,arg):
+        member = ctx.author
+
+        id = member.id
+        mention = f"<@{id}>"
+        name = member.display_name
+        pfp = member.display_avatar
+
+        with open('json/users.json', 'r') as f:
+            user = json.load(f)
+
+        with open('json/inventory.json', 'r') as f:
+            inv = json.load(f)
+
+        with open('json/recipe.json', 'r') as f:
+            recipe = json.load(f)
+
+        with open('json/item.json', 'r') as f:
+            item = json.load(f)
+
+        with open('json/enchant.json', 'r') as f:
+            en = json.load(f)
+        
+        split = arg.split(" ")
+        equip = split[0]
+        if equip not in ['sword','armor']:
+            await ctx.send(f"{mention} Please type correctly what equipment `[sword | armor]` you want enchant")
+            return
+        if len(split) <= 1:
+            await ctx.send(f"{mention} Please select the type stone enchantment you want to use!")
+            return
+
+        stone = split[1]
+        if user['users'][str(id)]['equipments'][equip] != None:
+            if f"{stone} stone enchant" in item['data']['item']['consumables']:
+                if f"{stone} stone enchant" in inv['data'][str(id)]['consumables']:
+                    equipment = user['users'][str(id)]['equipments'][equip]
+                    currentEnchant = inv['data'][str(id)]['equipments'][equipment]['enchant']
+                    print(currentEnchant)
+                    if equip == 'sword':
+                        if currentEnchant == None:
+                            currentAttack = int(inv['data'][str(id)]['equipments'][equipment]['attack'])
+                        else:
+                            currentAttack = int(inv['data'][str(id)]['equipments'][equipment]['attack'] * ((en['data'][currentEnchant] / 100) + 1))
+                    elif equip == 'armor':
+                        if currentEnchant == None:
+                            currentDefense = int(inv['data'][str(id)]['equipments'][equipment]['defense'])
+                        else:
+                            currentDefense = int(inv['data'][str(id)]['equipments'][equipment]['defense'] * ((en['data'][currentEnchant] / 100) + 1))
+                    enchant = ""
+                    probEnchant = "" 
+                    enchantCount = 0
+                    for k,v in item['data']['item']['consumables'][f"{stone} stone enchant"]['enchant'].items():
+                        enchantCount += 1
+                        enchant += f"{k}{'' if enchantCount >= len(item['data']['item']['consumables'][f'{stone} stone enchant']['enchant']) else '-'}"
+                        probEnchant += f"{int(v) / 100_000}{'' if enchantCount >= len(item['data']['item']['consumables'][f'{stone} stone enchant']['enchant']) else '-'}" 
+                    enchant = enchant.split('-')
+                    probEnchant = probEnchant.split('-')
+                    probEnchant = np.array(probEnchant,dtype=np.float32)
+                    randomEnchant = choices(population=enchant, weights=probEnchant)
+                    print(randomEnchant[0])
+
+                    inv['data'][str(id)]['equipments'][str(equipment)]['enchant'] = str(randomEnchant[0])
+                    inv['data'][str(id)]['consumables'][f"{stone} stone enchant"]['qty'] = inv['data'][str(id)]['consumables'][f"{stone} stone enchant"]['qty'] - 1
+                    if equip == 'sword':
+                        newAttack = int(inv['data'][str(id)]['equipments'][equipment]['attack'] * ((en['data'][str(randomEnchant[0])] / 100) + 1))
+                    elif equip == 'armor':
+                        newDefense = int(inv['data'][str(id)]['equipments'][equipment]['defense'] * ((en['data'][str(randomEnchant[0])] / 100) + 1))
+                    if inv['data'][str(id)]['consumables'][f"{stone} stone enchant"]['qty'] - 1 <= 0:
+                        del inv['data'][str(id)]['consumables'][f"{stone} stone enchant"]
+
+                    with open('json/inventory.json', 'w') as f:
+                        json.dump(inv, f, indent=4)
+                    itemIcon = item['data']['item']['equipments'][equip][equipment]['icon']
+                    enchantIcon = item['data']['item']['consumables'][f"{stone} stone enchant"]['icon']
+                    
+                    if equip == 'sword':
+                        user['users'][str(id)]['attack'] = user['users'][str(id)]['attack'] + (newAttack - currentAttack)
+                        print(newAttack)
+                        print(currentAttack)
+                    elif equip == 'armor':
+                        user['users'][str(id)]['defense'] = user['users'][str(id)]['defense'] + (newDefense - currentDefense)
+                        print(newDefense)
+                        print(currentDefense)
+
+                    with open('json/users.json', 'w') as f:
+                        json.dump(user, f, indent=4)
+
+                    embed = discord.Embed(description=f"You use {enchantIcon} `{stone} stone enchant` on {itemIcon} `{equipment}`",color=discord.Color.random())
+                    embed.set_author(name=f"{name}",icon_url=f"{pfp}")
+                    embed.add_field(name=f"=== {randomEnchant[0].upper()} ===",value="** **")
+                    embed.set_footer(text="Not the enchantment you looking for? Try Again")
+                    await ctx.send(embed=embed)
+                    return
+                else:
+                    await ctx.send(f"{mention} Hmm... You dont have that stone enchantment try another stone then use `{prefix}inv` view your stone enchantment")
+                    return
+            else:
+                await ctx.send(f"{mention} What stone enchantment you looking for please check `{prefix}inv` to see what stone you have")
+                return
+        else:
+            await ctx.send(f"{mention} Please equip the equipment that you want enchant!")
+            return
 
     client.run(TOKEN)

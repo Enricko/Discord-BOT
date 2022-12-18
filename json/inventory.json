@@ -4,36 +4,43 @@
             "equipments": {
                 "wooden sword": {
                     "name": "wooden sword",
-                    "attack": 3
+                    "attack": 3,
+                    "enchant": null
                 },
                 "stone sword": {
                     "name": "stone sword",
-                    "attack": 7
+                    "attack": 7,
+                    "enchant": "uncommon"
                 },
                 "leather armor": {
                     "name": "leather armor",
-                    "icon": "<:leatherArmor:1052221741230981181>",
-                    "defense": 3
+                    "defense": 3,
+                    "enchant": "ancient"
+                },
+                "iron sword": {
+                    "name": "iron sword",
+                    "attack": 16,
+                    "enchant": "artifact"
                 }
             },
             "items": {
                 "stone": {
                     "name": "stone",
-                    "qty": 5058
+                    "qty": 5043
                 },
                 "snake skin": {
                     "name": "snake skin",
-                    "qty": 1
+                    "qty": 10
                 },
                 "iron": {
                     "name": "iron",
-                    "qty": 13
+                    "qty": 803
                 }
             },
             "consumables": {
                 "health potion": {
                     "name": "health potion",
-                    "qty": 554
+                    "qty": 566
                 },
                 "normal chest": {
                     "name": "normal chest",
@@ -78,6 +85,10 @@
                 "large drop boost": {
                     "name": "large drop boost",
                     "qty": 55
+                },
+                "mythic stone enchant": {
+                    "name": "mythic stone enchant",
+                    "qty": 83
                 }
             }
         },

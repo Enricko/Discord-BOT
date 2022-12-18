@@ -9,7 +9,7 @@
                 },
                 "inventory":{
                     "description": "Showing all of your items\nYou can check your Equipments, Items, Consumables",
-                    "usage": "`inventory [equipment | item | consumable]`",
+                    "usage": "`inventory`",
                     "aliases" : "`inv`,`i`"
                 },
                 "cooldown":{
@@ -21,9 +21,20 @@
                     "description": "Showing all of your used booster and see the booster time left",
                     "usage": "`boost`",
                     "aliases" : "`buff`"
+                },
+                "enchant":{
+                    "description": "Used to enchant your equipments,but it require `stone enchant` to enchant your equipment and it depends on what tier `stone enchant` the higher the tier the better enchantment you get\n**NOTE You must equip the equipment that you want to enchant**",
+                    "usage": "`enchant [sword | armor] [stone]`",
+                    "aliases" : "None"
                 }
             },
-            "fighting":{},
+            "fighting":{
+                "hunt":{
+                    "description": "Used to find enemy and kill it and gain some **XP** and **GOLD** :coin: depends what floor are you in,you will lose some **HEALTH** because fighting it.\nThere some chance the enemy will drop some usefull item that you need on adventuring.\n**NOTE if you die you will lose your level by 1 so always keep eye on you health and always use Health Potion<:healthPotion:1052161164789952532>**",
+                    "usage": "`hunt`",
+                    "aliases" : "None"
+                }
+            },
             "economy":{
                 "shop":{
                     "description": "Show what we sell using gold currency.\nYou can buy anything unless your gold is enough using `.buy`",

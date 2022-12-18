@@ -203,6 +203,117 @@
                         "boost": 50,
                         "boost time": 600
                     }
+                },
+                "common stone enchant":{
+                    "name":"common stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 500,
+                    "enchant":{
+                        "common": 70000,
+                        "uncommon": 20000,
+                        "rare": 10000,
+                        "epic": 500
+                    }
+                },
+                "uncommon stone enchant":{
+                    "name":"uncommon stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 2000,
+                    "enchant":{
+                        "common": 20000,
+                        "uncommon": 60000,
+                        "rare": 15000,
+                        "epic": 5000,
+                        "legendary": 500,
+                        "ultimate": 1
+                    }
+                },
+                "rare stone enchant":{
+                    "name":"rare stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 10000,
+                    "enchant":{
+                        "common": 8000,
+                        "uncommon": 15000,
+                        "rare": 62000,
+                        "epic": 10000,
+                        "legendary": 5000,
+                        "ultimate": 500,
+                        "mythic": 1
+                    }
+                },
+                "epic stone enchant":{
+                    "name":"epic stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 25000,
+                    "enchant":{
+                        "common": 500,
+                        "uncommon": 8000,
+                        "rare": 15000,
+                        "epic": 60000,
+                        "legendary": 10000,
+                        "ultimate": 5000,
+                        "mythic": 500,
+                        "artifact": 1
+                    }
+                },
+                "legendary stone enchant":{
+                    "name":"legendary stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 100000,
+                    "enchant":{
+                        "uncommon": 500,
+                        "rare": 8000,
+                        "epic": 15000,
+                        "legendary": 65000,
+                        "ultimate": 10000,
+                        "mythic": 5000,
+                        "artifact": 500,
+                        "ancient":1
+                    }
+                },
+                "ultimate stone enchant":{
+                    "name":"ultimate stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 250000,
+                    "enchant":{
+                        "rare": 500,
+                        "epic": 8000,
+                        "legendary": 15000,
+                        "ultimate": 65000,
+                        "mythic": 10000,
+                        "artifact": 5000,
+                        "ancient":500,
+                        "godly":1
+                    }
+                },
+                "mythic stone enchant":{
+                    "name":"mythic stone enchant",
+                    "icon":"<:largeXpBoost:>",
+                    "type":"enchant",
+                    "open_type":"single",
+                    "sell": 500000,
+                    "enchant":{
+                        "epic": 500,
+                        "legendary": 8000,
+                        "ultimate": 15000,
+                        "mythic": 65000,
+                        "artifact": 10000,
+                        "ancient":5000,
+                        "godly":500
+                    }
                 }
             },
             "items":{

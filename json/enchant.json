@@ -1,0 +1,14 @@
+{
+    "data":{
+        "common": 10,
+        "uncommon": 20,
+        "rare":30,
+        "epic":50,
+        "legendary":75,
+        "ultimate":120,
+        "mythic":150,
+        "artifact":200,
+        "ancient":300,
+        "godly":400
+    }
+}

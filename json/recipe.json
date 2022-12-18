@@ -35,8 +35,8 @@
         },
         "special":{
             "health potion":{
-                "level": 1,
-                "stone": 10
+                "stone": 10,
+                "iron" : 5
             }
         }
     }
