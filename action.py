@@ -3,12 +3,12 @@ import random
 import datetime
 from datetime import datetime as date
 
-def level_up(id,xp_gain):
+def level_up(id,xp_gain,name):
     with open('json/users.json', 'r') as f:
         data = json.load(f)
     user = data['users']
 
-    name = user[str(id)]['name']
+    names = user[str(id)]['name']
     level = user[str(id)]['level']
     xp = user[str(id)]['xp']
     attack = user[str(id)]['attack'] 
@@ -48,7 +48,8 @@ def cooldown_error(cmd,cooldown):
     
     cd = {
         "hunt" : "You already hunting try again in",
-        "cooldown" : "~=~"
+        "cooldown" : "~=~",
+        "dungeon" : "You already dungeon you need rest for"
     }
     cd_left = cooldown - datetime.datetime.now() 
     seconds = int(cd_left.seconds)
@@ -56,7 +57,7 @@ def cooldown_error(cmd,cooldown):
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60
-    text = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
+    text = f"{f'{days}d' if days > 0 else ''} {f'{hours}h' if hours > 0 else ''} {f'{minutes}m' if minutes > 0 else ''} {f'{seconds}s' if seconds > 0 else ''}"
     return f"{cd[cmd]} {text}"
 
 def boost(boost = 'xp boost',id = 491905790966235136):

@@ -9,6 +9,8 @@
             "health": 100,
             "max_health": 100,
             "gold": 100,
+            "current floor": "underground f1",
+            "max floor": "underground f1",
             "equipments": {
                 "sword": null,
                 "armor": null
@@ -16,13 +18,15 @@
         },
         "491905790966235136": {
             "name": "IcyCoolz",
-            "level": 3,
-            "xp": 352.0,
-            "attack": 51,
-            "defense": 15,
-            "health": 110,
-            "max_health": 110,
-            "gold": 199762,
+            "level": 5,
+            "xp": 23.0,
+            "attack": 65,
+            "defense": 17,
+            "health": 120,
+            "max_health": 120,
+            "gold": 239842,
+            "current floor": "underground f2",
+            "max floor": "underground f2",
             "equipments": {
                 "sword": "iron sword",
                 "armor": "leather armor"

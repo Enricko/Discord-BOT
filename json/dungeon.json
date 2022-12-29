@@ -1,0 +1,28 @@
+{
+    "data":{
+        "underground f1":{
+            "monster":"Giant Snake",
+            "icon":"🐍",
+            "health": 200,
+            "attack": 50,
+            "area damage":2,
+            "prize":{
+                "gold":10000,
+                "uncommon stone enchant": 5
+            },
+            "open":"underground F2"
+        },
+        "underground f2":{
+            "monster":"Giant Snake",
+            "icon":"🐍",
+            "health": 500,
+            "attack": 100,
+            "area damage":3,
+            "prize":{
+                "gold":20000,
+                "uncommon stone enchant": 10
+            },
+            "open":"underground F3"
+        }
+    }
+}

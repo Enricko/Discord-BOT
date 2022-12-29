@@ -30,14 +30,23 @@ import numpy as np
 
 # totalBuff = f"{f'{days}d' if days > 0 else ''}{f'{hours}h' if hours > 0 else ''}{f'{minutes}m' if minutes > 0 else ''}{f'{seconds}s' if seconds > 0 else ''}"
 # print(totalBuff)      
-b = {
-    "data":{
-        "p": 1,
-        "s":{
-            "m":3
-        }
-    }
-}      
-c = 0
-d = 1  
-print(b)  
+# xy = []
+# for d in range(20):
+#     xy += [[random.randint(0,9),random.randint(0,9)]]
+# if [5,5] in xy:
+#     print(xy)
+text = ''
+# for y in range(9):
+#     text += '\n'
+#     for x in range(9):
+#         text += f"[{x},{y}],"
+knockback = [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,8],[7,8],[8,8],[8,1],[8,2],[8,3],[8,4],[8,5],[8,6],[8,7]]
+
+# for x in knockback:
+#     print(x[0])
+x = {
+    'item' : 1,
+    'data':5
+}
+for t,y in x.items():
+    print(t,y)

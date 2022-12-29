@@ -206,7 +206,7 @@
                 },
                 "common stone enchant":{
                     "name":"common stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:commonStoneEnchant:1054733466400469053>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 500,
@@ -219,7 +219,7 @@
                 },
                 "uncommon stone enchant":{
                     "name":"uncommon stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:uncommonStoneEnchant:1054734099903954954>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 2000,
@@ -234,7 +234,7 @@
                 },
                 "rare stone enchant":{
                     "name":"rare stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:rareStoneenchant:1054735149545299998>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 10000,
@@ -250,7 +250,7 @@
                 },
                 "epic stone enchant":{
                     "name":"epic stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:epicStoneEnchant:1054736149471559750>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 25000,
@@ -267,7 +267,7 @@
                 },
                 "legendary stone enchant":{
                     "name":"legendary stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:legendaryStoneEnchant:1054736206115639327>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 100000,
@@ -284,7 +284,7 @@
                 },
                 "ultimate stone enchant":{
                     "name":"ultimate stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:ultimateStoneEnchant:1055377167741104218>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 250000,
@@ -301,7 +301,7 @@
                 },
                 "mythic stone enchant":{
                     "name":"mythic stone enchant",
-                    "icon":"<:largeXpBoost:>",
+                    "icon":"<:mythicStoneEnchant:1055377257801191497>",
                     "type":"enchant",
                     "open_type":"single",
                     "sell": 500000,

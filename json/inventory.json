@@ -40,7 +40,7 @@
             "consumables": {
                 "health potion": {
                     "name": "health potion",
-                    "qty": 566
+                    "qty": 561
                 },
                 "normal chest": {
                     "name": "normal chest",
@@ -89,6 +89,10 @@
                 "mythic stone enchant": {
                     "name": "mythic stone enchant",
                     "qty": 83
+                },
+                "uncommon stone enchant": {
+                    "name": "uncommon stone enchant",
+                    "qty": 55
                 }
             }
         },
