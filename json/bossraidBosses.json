@@ -1,0 +1,37 @@
+{
+    "data":{
+        "gold dragon":{
+            "name":"gold dragon",
+            "icon":":dragon_face:",
+            "health":999999999999,
+            "attack":100,
+            "area damage":10,
+            "prize":{
+                "gold":{
+                    "gain":10
+                },
+                "small gold boost":{
+                    "drop":2000,
+                    "gain":1
+                },
+                "medium gold boost":{
+                    "drop":500,
+                    "gain":1
+                },
+                "large gold boost":{
+                    "drop":100,
+                    "gain":1
+                }
+            }
+        },
+        "lootbox dragon":{
+            "name":"lootbox dragon",
+            "icon":":dragon_face:",
+            "health":999999999999,
+            "attack":100,
+            "area damage":10,
+            "prize":{
+            }
+        }
+    }
+}

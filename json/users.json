@@ -20,13 +20,13 @@
             "name": "IcyCoolz",
             "level": 5,
             "xp": 23.0,
-            "attack": 65,
+            "attack": 105000000,
             "defense": 17,
-            "health": 120,
+            "health": 1,
             "max_health": 120,
-            "gold": 239842,
-            "current floor": "underground f2",
-            "max floor": "underground f2",
+            "gold": 47151602144842,
+            "current floor": "underground F3",
+            "max floor": "underground F3",
             "equipments": {
                 "sword": "iron sword",
                 "armor": "leather armor"

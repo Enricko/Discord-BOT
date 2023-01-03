@@ -59,7 +59,7 @@ def cooldown_error(cmd,cooldown):
     seconds = seconds % 60
     text = f"{f'{days}d' if days > 0 else ''} {f'{hours}h' if hours > 0 else ''} {f'{minutes}m' if minutes > 0 else ''} {f'{seconds}s' if seconds > 0 else ''}"
     return f"{cd[cmd]} {text}"
-
+    
 def boost(boost = 'xp boost',id = 491905790966235136):
     with open('json/users.json', 'r') as f:
         data = json.load(f)

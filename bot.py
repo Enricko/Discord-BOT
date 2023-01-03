@@ -6,7 +6,6 @@ import locale
 import time
 from random import choices
 from discord.ext import commands
-from discord.components import Components
 from discord.ui import Button, View
 import numpy as np
 import json
@@ -14,7 +13,7 @@ import action
 import asyncio
 
 def run_discord_bot():
-    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GUSHRo.6pPNDlrd5zrUY0Dg0VjiYbUFO-YPScOQ__TILw'
+    TOKEN = 'OTEzNzgzNTMyMTg1MzU0MjYx.GQqCdj.W4MaX_k4NxA9yslKlgzFIuSv8Uf3dWVAOD8kB4'
     prefix = "."
     client = commands.Bot(command_prefix=prefix,intents=discord.Intents.all())
     client.remove_command('help')
@@ -101,8 +100,8 @@ def run_discord_bot():
             with open('json/buff.json', 'r') as f:
                 buff = json.load(f)
 
-            buff = ['drop boost','xp boost','gold boost']
-            for x in buff:
+            buffs = ['drop boost','xp boost','gold boost']
+            for x in buffs:
                 buff['data'][str(member.id)] = {}
                 buff['data'][str(member.id)][x] = {}
                 buff['data'][str(member.id)][x]['small'] = {}
@@ -220,7 +219,7 @@ def run_discord_bot():
         embed.set_author(name=f"{name}",icon_url=f"{pfp}")
         embed.set_thumbnail(url=f"{pfp}")
         embed.add_field(name="PROGRESS",value=f"**Level** : {user['level']} ({level_persentage}%)\n**Xp** : {xp_range}")
-        embed.add_field(name="STATS",value=f"**:crossed_swords: Att** : {user['attack']}\n** :shield: Def** : {user['defense']}\n**:heart: Hp** : {user['health']} / {user['max_health']}")
+        embed.add_field(name="STATS",value=f"**:crossed_swords: Att** : {user['attack']}\n**:shield: Def** : {user['defense']}\n**:heart: Hp** : {user['health']} / {user['max_health']}")
         embed.add_field(name="FLOOR AREA",value=f"{currentFloor.title()} / {maxFloor.title()}")
         embed.add_field(name="EQUIPMENTS",value=f"**{('Sword not equip' if user['equipments']['sword'] == None else icon_eq['sword'][user['equipments']['sword']]['icon'] + f'[{str(swordEnchant).upper()}]')}**\n**{('Armor not equip' if user['equipments']['armor'] == None else icon_eq['armor'][user['equipments']['armor']]['icon'] + f'[{str(armorEnchant).upper()}]')}**")
         embed.add_field(name="CURRENCY",value=f"**:coin: Gold** : {gold}\n")
@@ -606,7 +605,7 @@ def run_discord_bot():
     class Menu(View):
         def __init__(self, author):
             self.author = author
-            super().__init__()
+            super().__init__(timeout=10)
 
         @discord.ui.button(label="Equipments",style=discord.ButtonStyle.grey,emoji="⚔️")
         async def equipments(self, interaction: discord.Interaction, button: Button):
@@ -628,8 +627,14 @@ def run_discord_bot():
                 text += f"{item[str(split[-1])][x]['icon']} **{x.title()}** **[{str(e[x]['enchant']).upper()}]** {'inuse' if user['users'][str(interaction.user.id)]['equipments']['sword'] == str(x) or user['users'][str(interaction.user.id)]['equipments']['armor'] == str(x) else ''}\n"
             embed.add_field(name=f"`{prefix}equip [name equipments]` to equip",value=f"\n{text}")
             embed.set_footer(text=f"If you need some money just do `{prefix}sell [item name]`")
-            await interaction.response.edit_message(embed=embed)
-            self.disabled = True
+            for child in self.children:
+                if child.label == 'Equipments':
+                    child.style = discord.ButtonStyle.green
+                    child.disabled = True
+                else:
+                    child.style = discord.ButtonStyle.grey
+                    child.disabled = False
+            await interaction.response.edit_message(embed=embed,view=self)
 
         @discord.ui.button(label="Items",style=discord.ButtonStyle.grey,emoji="🎒")
         async def items(self, interaction: discord.Interaction, button: Button):
@@ -656,7 +661,14 @@ def run_discord_bot():
 
             embed.add_field(name=f"You can use this item to craft in `{prefix}recipe`",value=f"\n{text}")
             embed.set_footer(text=f"If you need some money just do `{prefix}sell [item name]`")
-            await interaction.response.edit_message(embed=embed)
+            for child in self.children:
+                if child.label == 'Items':
+                    child.style = discord.ButtonStyle.green
+                    child.disabled = True
+                else:
+                    child.style = discord.ButtonStyle.grey
+                    child.disabled = False
+            await interaction.response.edit_message(embed=embed,view=self)
 
         @discord.ui.button(label="Consumables",style=discord.ButtonStyle.grey,emoji="🍎")
         async def consumables(self, interaction: discord.Interaction, button: Button):
@@ -716,10 +728,24 @@ def run_discord_bot():
             embed.add_field(name=f"ENCHANT",value=f"\n{enchant}")
             embed.set_footer(text=f"If you need some money just do `{prefix}sell [item name]`")
             # await interaction.response.edit_message()
-            await interaction.response.edit_message(embed=embed)
+            for child in self.children:
+                if child.label == 'Consumables':
+                    child.style = discord.ButtonStyle.green
+                    child.disabled = True
+                else:
+                    child.style = discord.ButtonStyle.grey
+                    child.disabled = False
+            await interaction.response.edit_message(embed=embed,view=self)
 
         async def interaction_check(self, interaction: discord.Interaction):
             return interaction.user.id == self.author.id
+        
+        async def on_timeout(self):
+            # Step 2
+            for child in self.children:
+                child.disabled = True
+                child.style = discord.ButtonStyle.grey
+            await self.message.edit(view=self)
 
         # @discord.ui.button(emoji="😀", label="Button 1", style=discord.ButtonStyle.primary)
         # async def button_callback(self, interaction: discord.Interaction, button: Button):
@@ -745,7 +771,7 @@ def run_discord_bot():
         embed.set_author(name='Select what you looking for!',icon_url=f"{member.display_avatar}")
         embed.add_field(name="Select",value=f"⚔️ Equipments\n🎒 Items\n🍎 Consumables")
         view = Menu(member)
-        await ctx.send(embed=embed,view=view)
+        view.message = await ctx.send(embed=embed,view=view)
 
     @client.command(name="shop",aliases=['shops'])
     @commands.cooldown(3,1,commands.BucketType.user)
@@ -1750,44 +1776,51 @@ def run_discord_bot():
 
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
-            dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
-            
-            for child in self.children: 
-                if bed in ["die","win"]:
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
                     child.disabled = True
                     child.style = discord.ButtonStyle.grey
                     self.stop()
-                else:
-                    if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY <= 0 and child.label == 'UP':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'UP':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY >= 8 and child.label == 'DOWN':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'DOWN':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX <= 0 and child.label == 'LEFT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'LEFT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX >= 8 and child.label == 'RIGHT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'RIGHT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
 
             await interaction.response.edit_message(embed=embed,view=self)
 
@@ -1803,44 +1836,51 @@ def run_discord_bot():
 
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
-            dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
-            
-            for child in self.children: 
-                if bed in ["die","win"]:
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
                     child.disabled = True
                     child.style = discord.ButtonStyle.grey
                     self.stop()
-                else:
-                    if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY <= 0 and child.label == 'UP':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'UP':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY >= 8 and child.label == 'DOWN':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'DOWN':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX <= 0 and child.label == 'LEFT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'LEFT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX >= 8 and child.label == 'RIGHT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'RIGHT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
 
             await interaction.response.edit_message(embed=embed,view=self)
 
@@ -1856,44 +1896,51 @@ def run_discord_bot():
 
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
-            dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
-            
-            for child in self.children: 
-                if bed in ["die","win"]:
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
                     child.disabled = True
                     child.style = discord.ButtonStyle.grey
                     self.stop()
-                else:
-                    if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY <= 0 and child.label == 'UP':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'UP':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY >= 8 and child.label == 'DOWN':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'DOWN':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX <= 0 and child.label == 'LEFT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'LEFT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX >= 8 and child.label == 'RIGHT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'RIGHT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
 
             await interaction.response.edit_message(embed=embed,view=self)
 
@@ -1909,44 +1956,51 @@ def run_discord_bot():
 
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
-            dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
-            
-            for child in self.children: 
-                if bed in ["die","win"]:
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
                     child.disabled = True
                     child.style = discord.ButtonStyle.grey
                     self.stop()
-                else:
-                    if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY <= 0 and child.label == 'UP':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'UP':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungY >= 8 and child.label == 'DOWN':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'DOWN':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX <= 0 and child.label == 'LEFT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'LEFT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
-                    if dungX >= 8 and child.label == 'RIGHT':
-                        child.disabled = True
-                        child.style = discord.ButtonStyle.red
-                    elif child.label == 'RIGHT':
-                        child.disabled = False
-                        child.style = discord.ButtonStyle.green
 
             await interaction.response.edit_message(embed=embed,view=self)
 
@@ -1962,8 +2016,9 @@ def run_discord_bot():
 
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
-            if str(interaction.user.id) in dung:
-                dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
                 
                 for child in self.children: 
                     if bed in ["die","win"]:
@@ -2016,6 +2071,14 @@ def run_discord_bot():
             for child in self.children:
                 child.disabled = True
                 child.style = discord.ButtonStyle.grey
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            
+            del dung[str(self.author.id)]
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            
             embed = discord.Embed(color=discord.Color.random())
             embed.set_author(name=f"{self.author.display_name} | Dungeon",icon_url=f"{self.author.display_avatar}")
             embed.add_field(name="You Run Out of Time",value=f"<@{self.author.id}> You take to long time to kill the dungeon boss,Try again later and please don't afk during dungeon!")
@@ -2057,14 +2120,13 @@ def run_discord_bot():
             hitSpot = dung[str(id)]['hit_spot']
             textDmg = ""
             areaDamage = int(dungeon['data'][str(user['users'][str(id)]['max floor'])]['area damage'])
-            user['users'][str(id)]['health'] = user['users'][str(id)]['health'] - areaDamage
+            user['users'][str(id)]['health'] = int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
             textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
             if [dungX,dungY - 1] in hitSpot:
                 takeDmg = int(user['users'][str(id)]['health'] - ( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense']))
                 user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
                 textDmg = f"**{name}** You taken {( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'])} from {dun['icon']}**{dun['monster']}**"
-                if takeDmg <= 0:
-                    return "die"
+        
             with open('json/users.json', 'w') as f:
                 json.dump(user, f, indent=4)
             if user['users'][str(id)]['health'] - areaDamage <= 0:
@@ -2135,14 +2197,13 @@ def run_discord_bot():
             dun = dungeon['data'][str(user['users'][str(id)]['max floor'])]
             textDmg = ""
             areaDamage = int(dungeon['data'][str(user['users'][str(id)]['max floor'])]['area damage'])
-            user['users'][str(id)]['health'] = user['users'][str(id)]['health'] - areaDamage
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
             textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
             if [dungX,dungY + 1] in hitSpot:
                 takeDmg = int(user['users'][str(id)]['health'] - ( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense']))
                 user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
                 textDmg = f"**{name}** You taken {( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'])} from {dun['icon']}**{dun['monster']}**"
-                if takeDmg <= 0:
-                    return "die"
+        
             with open('json/users.json', 'w') as f:
                 json.dump(user, f, indent=4)
             if user['users'][str(id)]['health'] - areaDamage <= 0:
@@ -2214,14 +2275,13 @@ def run_discord_bot():
             hitSpot = dung[str(id)]['hit_spot']
             textDmg = ""
             areaDamage = int(dungeon['data'][str(user['users'][str(id)]['max floor'])]['area damage'])
-            user['users'][str(id)]['health'] = user['users'][str(id)]['health'] - areaDamage
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
             textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
             if [dungX - 1,dungY] in hitSpot:
                 takeDmg = int(user['users'][str(id)]['health'] - ( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense']))
                 user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
                 textDmg = f"**{name}** You taken {( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'])} from {dun['icon']}**{dun['monster']}**"
-                if takeDmg <= 0:
-                    return "die"
+        
             with open('json/users.json', 'w') as f:
                 json.dump(user, f, indent=4)
             if user['users'][str(id)]['health'] - areaDamage <= 0:
@@ -2292,14 +2352,13 @@ def run_discord_bot():
             textDmg = ""
             dun = dungeon['data'][str(user['users'][str(id)]['max floor'])]
             areaDamage = int(dungeon['data'][str(user['users'][str(id)]['max floor'])]['area damage'])
-            user['users'][str(id)]['health'] = user['users'][str(id)]['health'] - areaDamage
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
             textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
             if [dungX + 1,dungY] in hitSpot:
                 takeDmg = int(user['users'][str(id)]['health'] - ( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense']))
                 user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
                 textDmg = f"**{name}** You taken {( 1 if dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'] <= 0 else dungeon['data'][str(user['users'][str(id)]['max floor'])]['attack'] - user['users'][str(id)]['defense'])} from {dun['icon']}**{dun['monster']}**"
-                if takeDmg <= 0:
-                    return "die"
+        
             with open('json/users.json', 'w') as f:
                 json.dump(user, f, indent=4)
             if user['users'][str(id)]['health'] - areaDamage <= 0:
@@ -2418,9 +2477,13 @@ def run_discord_bot():
             with open('json/dungMove.json', 'r') as f:
                 dung = json.load(f)
             
+            del dung[str(id)]
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            
             embed = discord.Embed(color=discord.Color.random())
             embed.set_author(name=f"{name} | Dungeon",icon_url=pfp)
-            embed.add_field(name="YOU DIED",value=f"{mention} You died but don't worried you can try again later.\n**DON'T FORGET TO HEAL AFTER DOING DUNGEON**")
+            embed.add_field(name="YOU DIED",value=f"{mention} You died but don't worried you can try again later.\nYou actually not died but your dying and only has 1 health left try using potion\n\n**DON'T FORGET TO HEAL AFTER DOING DUNGEON**")
 
             return embed
         def win(interaction):
@@ -2563,25 +2626,60 @@ def run_discord_bot():
             dung[str(id)]['player_x'] = 4
             dung[str(id)]['player_y'] = 7
             dung[str(id)]['current_health'] = dun['health']
-            dung[str(id)]['hit_spot'] = xy
-
-            with open('json/dungMove.json', 'w') as f:
-                json.dump(dung, f, indent=4)
-            
+            dung[str(id)]['hit_spot'] = xy            
 
             embed = discord.Embed(color=discord.Color.random())
             embed.set_author(name=f"{name} | Dungeon",icon_url=pfp)
             embed.add_field(name=f"Dungeon {name}",value=f"{text}",inline=False)
             embed.insert_field_at(index=0,name=f"BOSS {dun['icon']}**{dun['monster'].upper()}**",value=f"**{dun['monster'].upper()}** = :brown_heart:{dun['health']}/{dun['health']}\n**{name}** = :heart:{user['users'][str(id)]['health']}/{user['users'][str(id)]['max_health']}")
             
+            class yesNoDung(View):
+                def __init__(self, author):
+                    self.author = author
+                    super().__init__(timeout=600)
+                @discord.ui.button(label="YES",style=discord.ButtonStyle.green,disabled=False)
+                async def yes(self,interaction: discord.Interaction, button: Button):
+                    if cooldown > datetime.datetime.now():
+                        await ctx.send(action.cooldown_error('dungeon',cooldown))
+                        return
+                    cool['data'][str(member.id)]['dungeon'] = f"{(datetime.datetime.now() + cooldown_total).strftime('%Y-%m-%d %H:%M:%S')}"
+                    
+                    with open('json/cooldown.json', 'w') as f:
+                        json.dump(cool, f, indent=4)
+                    
+                    with open('json/dungMove.json', 'w') as f:
+                        json.dump(dung, f, indent=4)
+
+                    view.message = await ctx.send(embed=embed,view=view)
+                    self.stop()
+                    for child in self.children:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                    await interaction.response.edit_message(view=self)
+
+                @discord.ui.button(label="NO",style=discord.ButtonStyle.red,disabled=False)
+                async def no(self,interaction: discord.Interaction, button: Button):
+                    await ctx.send(f"**{name}** Dungeon canceled")
+                    self.stop()
+                    for child in self.children:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                    await interaction.response.edit_message(view=self)
+
+                async def interaction_check(self, interaction: discord.Interaction):
+                    return interaction.user.id == self.author.id
+
+            viewYN = yesNoDung(member)
             bed = discord.Embed(color=discord.Color.random())
             bed.set_author(name=f"{name}",icon_url=pfp)
             bed.add_field(name=f"Dungeon {user['users'][str(id)]['max floor']}",value=f"**ARE YOU WILLING TO ENTER THE DUNGEON??**\n```Say 'yes' to enter or 'no' to cancel```\n**NOTE PLEASE HEAL FIRST BEFORE DOING DUNGEON AND YOU ONLY HAVE 10 MINUTE TO FINISH THE DUNGEON**")
-            await ctx.send(embed=bed)
+            await ctx.send(embed=bed,view=viewYN)
+
             def check(m):
                 return m.content.lower() in ['y','yes','n','no'] and m.channel == ctx.channel and ctx.author.id == m.author.id
-           
+
             msg = await client.wait_for('message', check=check)
+            
             if msg.content.lower() in ['y','yes']:
                 if cooldown > datetime.datetime.now():
                     await ctx.send(action.cooldown_error('dungeon',cooldown))
@@ -2590,51 +2688,1133 @@ def run_discord_bot():
                 
                 with open('json/cooldown.json', 'w') as f:
                     json.dump(cool, f, indent=4)
+                with open('json/dungMove.json', 'w') as f:
+                    json.dump(dung, f, indent=4)
                 view.message = await ctx.send(embed=embed,view=view)
             elif msg.content.lower() in ['n','no']:
                 await ctx.send(f"**{name}** Dungeon canceled")
         except Exception as e:
             print(e)
             pass
+    
+    class dungeonMoveBossRaid(View):
+        def __init__(self, author):
+            self.author = author
+            super().__init__(timeout=300)
 
-    @client.command(name="coba")
-    async def tes(ctx):
-        member = ctx.author
-        try:
-            await ctx.send(
-                "This is a button test.",
-                components=[
-                    [
-                        Button( 
-                            style=discord.ButtonStyle.blurple,
-                            custom_id="button1",
-                            label="Blue button",
-                            emoji="🚀",
-                        ),
-                        Button(
-                            style=discord.ButtonStyle.red,
-                            custom_id="button2",
-                            label="Red button",
-                            disabled=True,
-                            emoji="🐺",
-                        ),
-                        Button(
-                            style=discord.ButtonStyle.green,
-                            custom_id="button3",
-                            label="Green button",
-                            emoji="😄",
-                        ),
-                    ]
-                ]
-            )
-            button = await client.wait_for(
-                "button_click", check = lambda i: i.custom_id in ["button1", "button3"]
-            )
-
-            if button.custom_id == "button1":
-                await button.send(content="Button clicked!", ephemeral=False)
+        @discord.ui.button(label="UP",style=discord.ButtonStyle.green)
+        async def up(self,interaction: discord.Interaction, button: Button):
+            bed = MoveBossraid.up(interaction)
+            if bed == "die":
+                embed = MoveBossraid.dieReward(self)
+            elif bed == "win":
+                embed = MoveBossraid.killReward(self)
             else:
-                await button.send(content="Button smashed!", ephemeral=False)
+                embed = bed
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                    timeReward = date.strptime(dung[str(interaction.user.id)]['time'], '%Y-%m-%d %H:%M:%S')
+                    timeoutReward = datetime.timedelta(seconds=300)
+                    if datetime.datetime.now() >= timeReward + timeoutReward:
+                        bed = 'win'
+                        embed = MoveBossraid.timeoutReward(self)
+
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
+                    child.disabled = True
+                    child.style = discord.ButtonStyle.grey
+                    self.stop()
+
+            await interaction.response.edit_message(embed=embed,view=self)
+
+        @discord.ui.button(label="DOWN",style=discord.ButtonStyle.green)
+        async def down(self,interaction: discord.Interaction, button: Button):
+            bed = MoveBossraid.down(interaction)
+            if bed == "die":
+                embed = MoveBossraid.dieReward(self)
+            elif bed == "win":
+                embed = MoveBossraid.killReward(self)
+            else:
+                embed = bed
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                    timeReward = date.strptime(dung[str(interaction.user.id)]['time'], '%Y-%m-%d %H:%M:%S')
+                    timeoutReward = datetime.timedelta(seconds=300)
+                    if datetime.datetime.now() >= timeReward + timeoutReward:
+                        bed = 'win'
+                        embed = MoveBossraid.timeoutReward(self)
+
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
+                    child.disabled = True
+                    child.style = discord.ButtonStyle.grey
+                    self.stop()
+
+            await interaction.response.edit_message(embed=embed,view=self)
+
+        @discord.ui.button(label="LEFT",style=discord.ButtonStyle.green)
+        async def left(self,interaction: discord.Interaction, button: Button):
+            bed = MoveBossraid.left(interaction)
+            if bed == "die":
+                embed = MoveBossraid.dieReward(self)
+            elif bed == "win":
+                embed = MoveBossraid.killReward(self)
+            else:
+                embed = bed
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                    timeReward = date.strptime(dung[str(interaction.user.id)]['time'], '%Y-%m-%d %H:%M:%S')
+                    timeoutReward = datetime.timedelta(seconds=300)
+                    if datetime.datetime.now() >= timeReward + timeoutReward:
+                        bed = 'win'
+                        embed = MoveBossraid.timeoutReward(self)
+
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
+                    child.disabled = True
+                    child.style = discord.ButtonStyle.grey
+                    self.stop()
+
+            await interaction.response.edit_message(embed=embed,view=self)
+
+        @discord.ui.button(label="RIGHT",style=discord.ButtonStyle.green)
+        async def right(self,interaction: discord.Interaction, button: Button):
+            bed = MoveBossraid.right(interaction)
+            if bed == "die":
+                embed = MoveBossraid.dieReward(self)
+            elif bed == "win":
+                embed = MoveBossraid.killReward(self)
+            else:
+                embed = bed
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                    timeReward = date.strptime(dung[str(interaction.user.id)]['time'], '%Y-%m-%d %H:%M:%S')
+                    timeoutReward = datetime.timedelta(seconds=300)
+                    if datetime.datetime.now() >= timeReward + timeoutReward:
+                        bed = 'win'
+                        embed = MoveBossraid.timeoutReward(self)
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
+                    child.disabled = True
+                    child.style = discord.ButtonStyle.grey
+                    self.stop()
+
+            await interaction.response.edit_message(embed=embed,view=self)
+
+        @discord.ui.button(label="ATTACK",style=discord.ButtonStyle.red,disabled=True)
+        async def attack(self,interaction: discord.Interaction, button: Button):
+            bed = MoveBossraid.attack(interaction)
+            if bed == "die":
+                embed = MoveBossraid.dieReward(self)
+            elif bed == "win":
+                embed = MoveBossraid.killReward(self)
+            else:
+                embed = bed
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+            if str(interaction.user.id) in dung or bed in ['die','win']:
+                if str(interaction.user.id) in dung:
+                    dungX,dungY = dung[str(interaction.user.id)]['player_x'],dung[str(interaction.user.id)]['player_y']
+                    timeReward = date.strptime(dung[str(interaction.user.id)]['time'], '%Y-%m-%d %H:%M:%S')
+                    timeoutReward = datetime.timedelta(seconds=300)
+                    if datetime.datetime.now() >= timeReward + timeoutReward:
+                        bed = 'win'
+                        embed = MoveBossraid.timeoutReward(self)
+                        
+                for child in self.children: 
+                    if bed in ["die","win"]:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                        self.stop()
+                    else:
+                        if [dungX,dungY] not in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif [dungX,dungY] in [[3,4],[4,3],[5,4],[4,5]] and child.label == 'ATTACK':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY <= 0 and child.label == 'UP':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'UP':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungY >= 8 and child.label == 'DOWN':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'DOWN':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX <= 0 and child.label == 'LEFT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'LEFT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+                        if dungX >= 8 and child.label == 'RIGHT':
+                            child.disabled = True
+                            child.style = discord.ButtonStyle.red
+                        elif child.label == 'RIGHT':
+                            child.disabled = False
+                            child.style = discord.ButtonStyle.green
+            else:
+                for child in self.children: 
+                    child.disabled = True
+                    child.style = discord.ButtonStyle.grey
+                    self.stop()
+            await interaction.response.edit_message(embed=embed,view=self)
+
+        async def interaction_check(self, interaction: discord.Interaction):
+            return interaction.user.id == self.author.id
+        
+        async def on_timeout(self):
+            # Step 2
+            for child in self.children:
+                child.disabled = True
+                child.style = discord.ButtonStyle.grey
+            embed = MoveBossraid.timeoutReward(self)
+            await self.message.edit(embed=embed,view=self)
+
+        
+    class MoveBossraid():
+        
+        def up(interaction):
+            member = interaction.user
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            dungX = dung[str(id)]['player_x']
+            dungY = dung[str(id)]['player_y']
+            hitSpot = dung[str(id)]['hit_spot']
+            textDmg = ""
+            bosses = bossraidBosses['data'][bossraid['boss']['name']]
+            areaDamage = int(bosses['area damage'])
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
+            textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
+            if [dungX,dungY - 1] in hitSpot:
+                takeDmg = int(user['users'][str(id)]['health'] - ( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense']))
+                user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
+                textDmg = f"**{name}** You taken {'{:,}'.format( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense'])} from {bosses['icon']}**{bosses['name']}**"
+        
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            if user['users'][str(id)]['health'] - areaDamage <= 0:
+                return "die"
+            moveUp = dungY - 1
+            if dungY - 1 <= 0:
+                moveUp = 0
+            xy = []
+            for d in range(40):
+                xy += [[random.randint(0,9),random.randint(0,9)]]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == moveUp and x == dungX:
+                        text += str(userSword)
+                    elif [x,y] in xy:
+                        text += "🔥"
+                    else:
+                        text += "🔲"
+
+            dung[str(id)]['player_y'] = moveUp
+            dung[str(id)]['hit_spot'] = xy
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+                        
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bosses['icon']}**{bosses['name'].upper()}**",value=f"**{bosses['name'].upper()}** = :brown_heart:{'{:,}'.format(bossraid['boss']['current_health'])}/{'{:,}'.format(bosses['health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n{textAreaDmg}\n{textDmg}\n**Total Damage Dealt** = {'{:,}'.format(dung[str(id)]['total_damage'])}")
+            return embed
+        def down(interaction):
+            member = interaction.user
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+
+            with open('json/recipe.json', 'r') as f:
+                recipe = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            dungX = dung[str(id)]['player_x']
+            dungY = dung[str(id)]['player_y']
+            hitSpot = dung[str(id)]['hit_spot']
+            textDmg = ""
+            bosses = bossraidBosses['data'][bossraid['boss']['name']]
+            areaDamage = int(bosses['area damage'])
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
+            textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
+            if [dungX,dungY + 1] in hitSpot:
+                takeDmg = int(user['users'][str(id)]['health'] - ( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense']))
+                user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
+                textDmg = f"**{name}** You taken {'{:,}'.format( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense'])} from {bosses['icon']}**{bosses['name']}**"
+        
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            if user['users'][str(id)]['health'] - areaDamage <= 0:
+                return "die"
+            moveDown = dungY + 1
+            if dungY + 1 >= 8:
+                moveDown = 8
+            xy = []
+            for d in range(40):
+                xy += [[random.randint(0,9),random.randint(0,9)]]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == moveDown and x == dungX:
+                        text += str(userSword)
+                    elif [x,y] in xy:
+                        text += "🔥"
+                    else:
+                        text += "🔲"
+
+            
+            dung[str(id)]['player_y'] = moveDown
+            dung[str(id)]['hit_spot'] = xy
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+                        
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bosses['icon']}**{bosses['name'].upper()}**",value=f"**{bosses['name'].upper()}** = :brown_heart:{'{:,}'.format(bossraid['boss']['current_health'])}/{'{:,}'.format(bosses['health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n{textAreaDmg}\n{textDmg}\n**Total Damage Dealt** = {'{:,}'.format(dung[str(id)]['total_damage'])}")
+            return embed
+        def left(interaction):
+            member = interaction.user
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+
+            with open('json/recipe.json', 'r') as f:
+                recipe = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            dungX = dung[str(id)]['player_x']
+            dungY = dung[str(id)]['player_y']
+            hitSpot = dung[str(id)]['hit_spot']
+            textDmg = ""
+            bosses = bossraidBosses['data'][bossraid['boss']['name']]
+            areaDamage = int(bosses['area damage'])
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
+            textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
+            if [dungX - 1,dungY] in hitSpot:
+                takeDmg = int(user['users'][str(id)]['health'] - ( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense']))
+                user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
+                textDmg = f"**{name}** You taken {'{:,}'.format( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense'])} from {bosses['icon']}**{bosses['name']}**"
+        
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            if user['users'][str(id)]['health'] - areaDamage <= 0:
+                return "die"
+            moveLeft = dungX - 1
+            if dungX - 1 <= 0:
+                moveLeft = 0
+            xy = []
+            for d in range(40):
+                xy += [[random.randint(0,9),random.randint(0,9)]]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == dungY and x == moveLeft:
+                        text += str(userSword)
+                    elif [x,y] in xy:
+                        text += "🔥"
+                    else:
+                        text += "🔲"
+
+            dung[str(id)]['player_x'] = moveLeft
+            dung[str(id)]['hit_spot'] = xy
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+                        
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bosses['icon']}**{bosses['name'].upper()}**",value=f"**{bosses['name'].upper()}** = :brown_heart:{'{:,}'.format(bossraid['boss']['current_health'])}/{'{:,}'.format(bosses['health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n{textAreaDmg}\n{textDmg}\n**Total Damage Dealt** = {'{:,}'.format(dung[str(id)]['total_damage'])}")
+            return embed
+        def right(interaction):
+            member = interaction.user
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+
+            with open('json/recipe.json', 'r') as f:
+                recipe = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            dungX = dung[str(id)]['player_x']
+            dungY = dung[str(id)]['player_y']
+            hitSpot = dung[str(id)]['hit_spot']
+            textDmg = ""
+            bosses = bossraidBosses['data'][bossraid['boss']['name']]
+            areaDamage = int(bosses['area damage'])
+            user['users'][str(id)]['health'] =int(1 if user['users'][str(id)]['health'] - areaDamage <= 0 else user['users'][str(id)]['health'] - areaDamage)
+            textAreaDmg = f"**{name}** You taken {areaDamage}:crossed_swords: cause the area"
+            if [dungX + 1,dungY] in hitSpot:
+                takeDmg = int(user['users'][str(id)]['health'] - ( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense']))
+                user['users'][str(id)]['health'] = int(1 if takeDmg <= 0 else takeDmg)
+                textDmg = f"**{name}** You taken {'{:,}'.format( 1 if bosses['attack'] - user['users'][str(id)]['defense'] <= 0 else bosses['attack'] - user['users'][str(id)]['defense'])} from {bosses['icon']}**{bosses['name']}**"
+        
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            if user['users'][str(id)]['health'] - areaDamage <= 0:
+                return "die"
+            moveRight = dungX + 1
+            if dungX + 1 >= 8:
+                moveRight = 8
+            xy = []
+            for d in range(40):
+                xy += [[random.randint(0,9),random.randint(0,9)]]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == dungY and x == moveRight:
+                        text += str(userSword)
+                    elif [x,y] in xy:
+                        text += "🔥"
+                    else:
+                        text += "🔲"
+
+            dung[str(id)]['player_x'] = moveRight
+            dung[str(id)]['hit_spot'] = xy
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bosses['icon']}**{bosses['name'].upper()}**",value=f"**{bosses['name'].upper()}** = :brown_heart:{'{:,}'.format(bossraid['boss']['current_health'])}/{'{:,}'.format(bosses['health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n{textAreaDmg}\n{textDmg}\n**Total Damage Dealt** = {'{:,}'.format(dung[str(id)]['total_damage'])}")
+            return embed
+        def attack(interaction):
+            member = interaction.user
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+
+            with open('json/recipe.json', 'r') as f:
+                recipe = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            knockback = [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,8],[7,8],[8,8],[8,1],[8,2],[8,3],[8,4],[8,5],[8,6],[8,7]]
+            knockX,knockY = knockback[random.randint(0,len(knockback))]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == knockY and x == knockX:
+                        text += str(userSword)
+                    else:
+                        text += "🔲"
+
+            bosses = bossraidBosses['data'][bossraid['boss']['name']]
+            dmgGiven = bossraid['boss']['current_health'] - user['users'][str(id)]['attack']
+            
+            bossraid['boss']['current_health'] = dmgGiven
+
+            with open('json/bossraid.json', 'w') as f:
+                json.dump(bossraid, f, indent=4)
+
+            dung[str(id)]['player_x'] = knockX
+            dung[str(id)]['player_y'] = knockY
+            dung[str(id)]['total_damage'] = dung[str(id)]['total_damage'] + user['users'][str(id)]['attack']
+
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            textAtt = f"=============================\n **{name}** You give {'{:,}'.format(user['users'][str(id)]['attack'])}:crossed_swords: to **{bosses['name'].upper()}** \nand you got knockback to edge dungeon"
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bosses['icon']}**{bosses['name'].upper()}**",value=f"**{bosses['name'].upper()}** = :brown_heart:{'{:,}'.format(dmgGiven)}/{'{:,}'.format(bosses['health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n{textAtt}\n**Total Damage Dealt** = {'{:,}'.format(dung[str(id)]['total_damage'])}")
+            if dmgGiven <= 0:
+                del dung[str(id)]
+                return "win"
+            return embed
+        def timeoutReward(self):
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bosses = json.load(f)
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+            try:
+                itemGainText = ""
+                totalDamage = int(dung[str(self.author.id)]['total_damage'])
+                goldGain = int(bosses['data'][bossraid['boss']['name']]['prize']['gold']['gain']) * totalDamage
+                itemGainText += f"\n:coin: **Gold** : +{'{:,}'.format(goldGain)}"
+                user['users'][str(self.author.id)]['gold'] = user['users'][str(self.author.id)]['gold'] + goldGain
+                
+                dropProb = ""
+                dropItemChance = ""
+                noCount = 0
+                leftChance = 0
+                prize = bosses['data'][bossraid['boss']['name']]['prize']
+                totalitem = totalDamage // 750 if totalDamage <= 10_000 else (totalDamage // 1000 if totalDamage <= 100_000 else (1000 if totalDamage // 1000 >= 1000 else totalDamage // 400)) 
+
+                for x in prize:
+                    if x != 'gold':
+                        noCount += 1
+                        dropProb += f"{x}{'' if noCount == len(prize) - 1 else '-'}"
+                        dropItemChance += f"{prize[x]['drop'] / 100_000}{'' if noCount == len(prize) - 1 else '-'}"
+                        leftChance += prize[x]['drop']
+
+                leftChance = float((100_000 - leftChance) / 100_000)
+
+                dropItemChance = dropItemChance.split("-")
+                dropItemChance.append(leftChance)
+                drop = np.array(dropItemChance,dtype=np.float32)
+                dropProba = dropProb.split("-")
+                dropProba.append('none')
+
+                resultTotal = choices(population=dropProba, weights=drop,k=int(totalitem))
+                for i in dropProba:
+                    if i != 'none' and resultTotal.count(i) > 0:
+                        if i in item['data']['item']['items']:
+                            itemGainText += f"\n{item['data']['item']['items'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['items'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['items'][i] = {}
+                            inv['data'][str(self.author.id)]['items'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['items'][i]['qty'] = qty
+                        elif i in item['data']['item']['consumables']:
+                            itemGainText += f"\n{item['data']['item']['consumables'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['consumables'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['consumables'][i] = {}
+                            inv['data'][str(self.author.id)]['consumables'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['consumables'][i]['qty'] = qty
+                
+            except Exception as e:
+                print(e)
+                pass
+
+            del dung[str(self.author.id)]
+
+            with open('json/inventory.json', 'w') as f:
+                json.dump(inv, f, indent=4)
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{self.author.display_name} | Boss Raid",icon_url=f"{self.author.display_avatar}")
+            embed.add_field(name="You Run Out of Time",value=f"<@{self.author.id}> Timeout you need some rest after raid\n\n**Here is your reward participation :**{itemGainText}")
+            return embed
+        def killReward(self):
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bosses = json.load(f)
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+            try:
+                itemGainText = ""
+                totalDamage = int(dung[str(self.author.id)]['total_damage'])
+                goldGain = int(bosses['data'][bossraid['boss']['name']]['prize']['gold']['gain']) * totalDamage
+                itemGainText += f"\n:coin: **Gold** : +{'{:,}'.format(goldGain)}"
+                user['users'][str(self.author.id)]['gold'] = user['users'][str(self.author.id)]['gold'] + goldGain
+                
+                dropProb = ""
+                dropItemChance = ""
+                noCount = 0
+                leftChance = 0
+                prize = bosses['data'][bossraid['boss']['name']]['prize']
+                totalitem = totalDamage // 750 if totalDamage <= 10_000 else (totalDamage // 1000 if totalDamage <= 100_000 else (1000 if totalDamage // 1000 >= 1000 else totalDamage // 400)) 
+                print(totalDamage)
+                print(totalitem)
+                for x in prize:
+                    if x != 'gold':
+                        noCount += 1
+                        dropProb += f"{x}{'' if noCount == len(prize) - 1 else '-'}"
+                        dropItemChance += f"{prize[x]['drop'] / 100_000}{'' if noCount == len(prize) - 1 else '-'}"
+                        leftChance += prize[x]['drop']
+
+                leftChance = float((100_000 - leftChance) / 100_000)
+
+                dropItemChance = dropItemChance.split("-")
+                dropItemChance.append(leftChance)
+                drop = np.array(dropItemChance,dtype=np.float32)
+                dropProba = dropProb.split("-")
+                dropProba.append('none')
+
+                resultTotal = choices(population=dropProba, weights=drop,k=int(totalitem))
+                for i in dropProba:
+                    if i != 'none' and resultTotal.count(i) > 0:
+                        if i in item['data']['item']['items']:
+                            itemGainText += f"\n{item['data']['item']['items'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['items'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['items'][i] = {}
+                            inv['data'][str(self.author.id)]['items'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['items'][i]['qty'] = qty
+                        elif i in item['data']['item']['consumables']:
+                            itemGainText += f"\n{item['data']['item']['consumables'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['consumables'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['consumables'][i] = {}
+                            inv['data'][str(self.author.id)]['consumables'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['consumables'][i]['qty'] = qty
+                
+            except Exception as e:
+                print(e)
+                pass
+
+            del dung[str(self.author.id)]
+
+            with open('json/inventory.json', 'w') as f:
+                json.dump(inv, f, indent=4)
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{self.author.display_name} | Boss Raid",icon_url=f"{self.author.display_avatar}")
+            embed.add_field(name="The Boss Has Been Killed",value=f"<@{self.author.id}> Boss has been killed!!!\n\n**Here is your reward participation :**{itemGainText}")
+            return embed
+        def dieReward(self):
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bosses = json.load(f)
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+            try:
+                itemGainText = ""
+                totalDamage = int(dung[str(self.author.id)]['total_damage'])
+                goldGain = int(bosses['data'][bossraid['boss']['name']]['prize']['gold']['gain']) * totalDamage
+                itemGainText += f"\n:coin: **Gold** : +{'{:,}'.format(goldGain)}"
+                user['users'][str(self.author.id)]['gold'] = user['users'][str(self.author.id)]['gold'] + goldGain
+                
+                dropProb = ""
+                dropItemChance = ""
+                noCount = 0
+                leftChance = 0
+                prize = bosses['data'][bossraid['boss']['name']]['prize']
+                totalitem = totalDamage // 750 if totalDamage <= 10_000 else (totalDamage // 1000 if totalDamage <= 100_000 else (1000 if totalDamage // 1000 >= 1000 else totalDamage // 400)) 
+
+                for x in prize:
+                    if x != 'gold':
+                        noCount += 1
+                        dropProb += f"{x}{'' if noCount == len(prize) - 1 else '-'}"
+                        dropItemChance += f"{prize[x]['drop'] / 100_000}{'' if noCount == len(prize) - 1 else '-'}"
+                        leftChance += prize[x]['drop']
+
+                leftChance = float((100_000 - leftChance) / 100_000)
+
+                dropItemChance = dropItemChance.split("-")
+                dropItemChance.append(leftChance)
+                drop = np.array(dropItemChance,dtype=np.float32)
+                dropProba = dropProb.split("-")
+                dropProba.append('none')
+
+                resultTotal = choices(population=dropProba, weights=drop,k=int(totalitem))
+                for i in dropProba:
+                    if i != 'none' and resultTotal.count(i) > 0:
+                        if i in item['data']['item']['items']:
+                            itemGainText += f"\n{item['data']['item']['items'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['items'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['items'][i] = {}
+                            inv['data'][str(self.author.id)]['items'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['items'][i]['qty'] = qty
+                        elif i in item['data']['item']['consumables']:
+                            itemGainText += f"\n{item['data']['item']['consumables'][i]['icon']} **{i.title()}** : +{resultTotal.count(i)}"
+                            qty = inv['data'][str(self.author.id)]['consumables'][i]['qty'] + resultTotal.count(i)
+                            inv['data'][str(self.author.id)]['consumables'][i] = {}
+                            inv['data'][str(self.author.id)]['consumables'][i]['name'] = i
+                            inv['data'][str(self.author.id)]['consumables'][i]['qty'] = qty
+                
+            except Exception as e:
+                print(e)
+                pass
+
+            del dung[str(self.author.id)]
+
+            with open('json/inventory.json', 'w') as f:
+                json.dump(inv, f, indent=4)
+            with open('json/dungMove.json', 'w') as f:
+                json.dump(dung, f, indent=4)
+            with open('json/users.json', 'w') as f:
+                json.dump(user, f, indent=4)
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{self.author.display_name} | Boss Raid",icon_url=f"{self.author.display_avatar}")
+            embed.add_field(name="You Died",value=f"<@{self.author.id}> You died but someone just help you from completely died you still hav 1 HP\n\n**Here is your reward participation :**{itemGainText}")
+            return embed
+
+    @client.command(name='bossraid',aliases=['boss'])
+    @commands.cooldown(10,1,commands.BucketType.user)
+    async def bossraid(ctx):
+        try:
+            member = ctx.author
+
+            id = member.id
+            mention = f"<@{id}>"
+            name = member.display_name
+            pfp = member.display_avatar
+
+            with open('json/users.json', 'r') as f:
+                user = json.load(f)
+
+            with open('json/inventory.json', 'r') as f:
+                inv = json.load(f)
+            
+            with open('json/cooldown.json', 'r') as c:
+                cool = json.load(c)
+
+            with open('json/bossraid.json', 'r') as f:
+                bossraid = json.load(f)
+
+            with open('json/bossraidBosses.json', 'r') as f:
+                bossraidBosses = json.load(f)
+
+            with open('json/item.json', 'r') as f:
+                item = json.load(f)
+
+            with open('json/dungMove.json', 'r') as f:
+                dung = json.load(f)
+
+            if str(member.id) not in user['users']:
+                await ctx.send(f'`{prefix}start` to register')
+                return
+
+            cooldown = date.strptime(cool['data'][str(id)]['dungeon'], '%Y-%m-%d %H:%M:%S')
+            cooldown_total = datetime.timedelta(seconds=21600)
+            if cooldown > datetime.datetime.now():
+                await ctx.send(action.cooldown_error('dungeon',cooldown))
+                return
+
+            if user['users'][str(id)]['equipments']['sword'] == None:
+                userSword = ":punch:"
+            else:
+                userSword = item['data']['item']['equipments']['sword'][user['users'][str(id)]['equipments']['sword']]['icon']
+            text = ""
+            view = dungeonMoveBossRaid(member)
+            xy = []
+            
+            for d in range(40):
+                xy += [[random.randint(0,9),random.randint(0,9)]]
+            for y in range(9):
+                text += "\n"
+                for x in range(9):
+                    if x == 4 and y == 4:
+                        text += "🐍"
+                    elif y == 7 and x == 4:
+                        text += str(userSword)
+                    elif [x,y] in xy:
+                        text += "🔥"
+                    else:
+                        text += "🔲"
+            if bossraid['boss'] == None or bossraid['boss']['current_health'] <= 0:
+                le = random.randint(0,len(bossraidBosses['data'])-1)
+                for i,l in zip(bossraidBosses['data'],range(len(bossraidBosses['data']))):
+                    if l == le:
+                        bossraid['boss']['name'] = str(i)
+                        bossraid['boss']['current_health'] = bossraidBosses['data'][i]['health']
+                        bossraid['boss']['max_health'] = bossraidBosses['data'][i]['health']
+                        break
+                bossraid['top']['latest'] = {}
+                bossraid['top']['latest'] = bossraid['top']['current']
+                bossraid['top']['current'] = {}
+
+                with open('json/bossraid.json', 'w') as f:
+                    json.dump(bossraid, f, indent=4)
+                
+            boss = bossraid['boss']
+            
+            dung[str(id)] = {}
+            dung[str(id)]['name_dungeon'] = f"boss raid **{boss['name']}**"
+            dung[str(id)]['player_x'] = 4
+            dung[str(id)]['player_y'] = 7
+            dung[str(id)]['total_damage'] = 0
+            dung[str(id)]['time'] = f"{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}"
+            dung[str(id)]['hit_spot'] = xy
+
+            embed = discord.Embed(color=discord.Color.random())
+            embed.set_author(name=f"{name} | Boss Raid",icon_url=pfp)
+            embed.add_field(name=f"Boss Raid {name}",value=f"{text}",inline=False)
+            embed.insert_field_at(index=0,name=f"BOSS {bossraidBosses['data'][boss['name']]['icon']}**{boss['name'].upper()}**",value=f"**{boss['name'].upper()}** = :brown_heart:{'{:,}'.format(boss['current_health'])}/{'{:,}'.format(boss['max_health'])}\n**{name}** = :heart:{'{:,}'.format(user['users'][str(id)]['health'])}/{'{:,}'.format(user['users'][str(id)]['max_health'])}\n**Total Damage Dealt** = 0")
+            
+            class yesNoDung(View):
+                def __init__(self, author):
+                    self.author = author
+                    super().__init__(timeout=600)
+                @discord.ui.button(label="YES",style=discord.ButtonStyle.green,disabled=False)
+                async def yes(self,interaction: discord.Interaction, button: Button):
+                    if cooldown > datetime.datetime.now():
+                        await ctx.send(action.cooldown_error('dungeon',cooldown))
+                        return
+                    cool['data'][str(member.id)]['dungeon'] = f"{(datetime.datetime.now() + cooldown_total).strftime('%Y-%m-%d %H:%M:%S')}"
+                    
+                    with open('json/cooldown.json', 'w') as f:
+                        json.dump(cool, f, indent=4)
+                    view.message = await ctx.send(embed=embed,view=view)
+                    self.stop()
+                    with open('json/dungMove.json', 'w') as f:
+                        json.dump(dung, f, indent=4)
+                    for child in self.children:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                    await interaction.response.edit_message(view=self)
+
+                @discord.ui.button(label="NO",style=discord.ButtonStyle.red,disabled=False)
+                async def no(self,interaction: discord.Interaction, button: Button):
+                    await ctx.send(f"**{name}** Boss Raid canceled")
+                    self.stop()
+                    for child in self.children:
+                        child.disabled = True
+                        child.style = discord.ButtonStyle.grey
+                    await interaction.response.edit_message(view=self)
+
+                async def interaction_check(self, interaction: discord.Interaction):
+                    return interaction.user.id == self.author.id
+
+            viewYN = yesNoDung(member)
+            bed = discord.Embed(color=discord.Color.random())
+            bed.set_author(name=f"{name}",icon_url=pfp)
+            bed.add_field(name=f"Boss Raid",value=f"**ARE YOU WILLING TO JOIN THE BOSS RAID??**\n{bossraidBosses['data'][boss['name']]['icon']} {boss['name'].title()}\n:heart:{'{:,}'.format(boss['current_health'])}/{'{:,}'.format(boss['max_health'])}\n```Say 'yes' to enter or 'no' to cancel```\n**NOTE PLEASE HEAL FIRST BEFORE DOING BOSS RAID AND YOU ONLY HAVE 5 MINUTE TO DAMAGE IT AS MUCH AS YOU CAN**")
+            await ctx.send(embed=bed,view=viewYN)
+
+            def check(m):
+                return m.content.lower() in ['y','yes','n','no'] and m.channel == ctx.channel and ctx.author.id == m.author.id
+
+            msg = await client.wait_for('message', check=check)
+            
+            if msg.content.lower() in ['y','yes']:
+                if cooldown > datetime.datetime.now():
+                    await ctx.send(action.cooldown_error('dungeon',cooldown))
+                    return
+                cool['data'][str(member.id)]['dungeon'] = f"{(datetime.datetime.now() + cooldown_total).strftime('%Y-%m-%d %H:%M:%S')}"
+                
+                with open('json/cooldown.json', 'w') as f:
+                    json.dump(cool, f, indent=4)
+                with open('json/dungMove.json', 'w') as f:
+                    json.dump(dung, f, indent=4)
+                view.message = await ctx.send(embed=embed,view=view)
+            elif msg.content.lower() in ['n','no']:
+                await ctx.send(f"**{name}** Boss Raid canceled")
         except Exception as e:
             print(e)
             pass

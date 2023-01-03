@@ -1,0 +1,11 @@
+{
+    "boss": {
+        "current_health": 999684999999,
+        "name": "gold dragon",
+        "max_health": 999999999999
+    },
+    "top": {
+        "current": {},
+        "latest": {}
+    }
+}

@@ -24,10 +24,6 @@
                 }
             },
             "items": {
-                "stone": {
-                    "name": "stone",
-                    "qty": 5043
-                },
                 "snake skin": {
                     "name": "snake skin",
                     "qty": 10
@@ -35,16 +31,20 @@
                 "iron": {
                     "name": "iron",
                     "qty": 803
+                },
+                "stone": {
+                    "name": "stone",
+                    "qty": 9
                 }
             },
             "consumables": {
                 "health potion": {
                     "name": "health potion",
-                    "qty": 561
+                    "qty": 563
                 },
                 "normal chest": {
                     "name": "normal chest",
-                    "qty": 9836
+                    "qty": 9834
                 },
                 "boost chest": {
                     "name": "boost chest",
@@ -56,7 +56,7 @@
                 },
                 "small gold boost": {
                     "name": "small gold boost",
-                    "qty": 705
+                    "qty": 399110
                 },
                 "small drop boost": {
                     "name": "small drop boost",
@@ -68,7 +68,7 @@
                 },
                 "medium gold boost": {
                     "name": "medium gold boost",
-                    "qty": 500
+                    "qty": 100260
                 },
                 "medium drop boost": {
                     "name": "medium drop boost",
@@ -80,7 +80,7 @@
                 },
                 "large gold boost": {
                     "name": "large gold boost",
-                    "qty": 324
+                    "qty": 20208
                 },
                 "large drop boost": {
                     "name": "large drop boost",
@@ -92,7 +92,7 @@
                 },
                 "uncommon stone enchant": {
                     "name": "uncommon stone enchant",
-                    "qty": 55
+                    "qty": 65
                 }
             }
         },

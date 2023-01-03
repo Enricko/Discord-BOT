@@ -7,16 +7,18 @@ import locale
 from datetime import datetime as date
 import numpy as np
 
-# print("${:,}".format(1231321231231))
-# obj  = json.load(open("json/shop.json"))
+# # print("${:,}".format(1231321231231))
+# obj  = json.load(open("json/bossraidBosses.json"))
 
-# for i in obj['data']:
-#     if i == "wooden sword":
+# le = random.randint(0,len(obj['data'])-1)
+# for i,l in zip(obj['data'],range(len(obj['data']))):
+#     print(l)
+#     print(le)
+#     if l == le:
 #         print(obj["data"][i])
-#         del obj["data"][i]
 #         break
-#     # print(obj["data"][i])
-#     # print(obj["data"][i])
+    # print(obj["data"][i])
+    # print(obj["data"][i])
 
 # # Output the updated file with pretty JSON                                      
 # open("json/shop.json", "w").write(
@@ -34,19 +36,7 @@ import numpy as np
 # for d in range(20):
 #     xy += [[random.randint(0,9),random.randint(0,9)]]
 # if [5,5] in xy:
-#     print(xy)
-text = ''
-# for y in range(9):
-#     text += '\n'
-#     for x in range(9):
-#         text += f"[{x},{y}],"
-knockback = [[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[6,0],[7,0],[8,0],[0,1],[0,2],[0,3],[0,4],[0,5],[0,6],[0,7],[0,8],[1,8],[2,8],[3,8],[4,8],[5,8],[6,8],[7,8],[8,8],[8,1],[8,2],[8,3],[8,4],[8,5],[8,6],[8,7]]
-
-# for x in knockback:
-#     print(x[0])
-x = {
-    'item' : 1,
-    'data':5
-}
-for t,y in x.items():
-    print(t,y)
+a = "1-1-2"
+b = a.split('-')
+b.append('5')
+print(1000 // 100 >= 2)
